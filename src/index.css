@@ -2,14 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: 255 115 179;
+  --primary-foreground: 255 255 255;
+}
+
 body {
-  @apply bg-chatgpt-main text-white;
+  @apply bg-[#F6F8FA] text-gray-900;
 }
 
 .sidebar-item {
-  @apply flex items-center gap-3 rounded-md px-3 py-3 text-sm transition-colors duration-200 hover:bg-chatgpt-hover cursor-pointer;
+  @apply flex items-center gap-3 rounded-md px-3 py-3 text-sm transition-colors duration-200 hover:bg-gray-100 cursor-pointer;
 }
 
 .action-button {
-  @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-chatgpt-hover/50 border border-transparent hover:border-chatgpt-border transition-all duration-200;
+  @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 border border-transparent hover:border-gray-200 transition-all duration-200;
 }
