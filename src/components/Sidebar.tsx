@@ -1,4 +1,5 @@
 import { MessageSquare, FileText, Home, User, Settings, BarChart2, Menu } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -6,8 +7,10 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
+  const location = useLocation();
+  
   const menuItems = [
-    { icon: MessageSquare, label: "AI Advisor", href: "/advisor" },
+    { icon: MessageSquare, label: "AI Advisor", href: "/ai-advisor" },
     { icon: FileText, label: "Reports", href: "/reports" },
     { icon: Home, label: "Dashboard", href: "/" },
     { icon: User, label: "Profile", href: "/profile" },
@@ -35,14 +38,15 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
       
       <nav className="p-4">
         {menuItems.map((item) => (
-          <a
+          <Link
             key={item.label}
-            href={item.href}
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors mb-1"
+            to={item.href}
+            className={`flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors mb-1
+              ${location.pathname === item.href ? 'bg-gray-100' : ''}`}
           >
             <item.icon className="h-5 w-5" />
             {isOpen && <span>{item.label}</span>}
-          </a>
+          </Link>
         ))}
       </nav>
     </div>
