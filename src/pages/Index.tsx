@@ -3,6 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import ServiceCards from "@/components/ServiceCards";
 import CreditBalance from "@/components/CreditBalance";
+import ChatInterface from "@/components/ChatInterface";
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -13,8 +14,15 @@ const Index = () => {
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
         <DashboardHeader />
         <main className="p-6">
-          <CreditBalance />
-          <ServiceCards />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <CreditBalance />
+              <ServiceCards />
+            </div>
+            <div>
+              <ChatInterface />
+            </div>
+          </div>
         </main>
       </div>
     </div>
