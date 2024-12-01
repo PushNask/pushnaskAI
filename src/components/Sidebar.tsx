@@ -1,4 +1,4 @@
-import { Home, BarChart2, FileText, Settings, Menu } from "lucide-react";
+import { MessageSquare, FileText, Home, User, Settings, BarChart2, Menu } from "lucide-react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -7,10 +7,12 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const menuItems = [
-    { icon: Home, label: "Dashboard", href: "/" },
-    { icon: BarChart2, label: "Analytics", href: "/analytics" },
+    { icon: MessageSquare, label: "AI Advisor", href: "/advisor" },
     { icon: FileText, label: "Reports", href: "/reports" },
+    { icon: Home, label: "Dashboard", href: "/" },
+    { icon: User, label: "Profile", href: "/profile" },
     { icon: Settings, label: "Settings", href: "/settings" },
+    { icon: BarChart2, label: "Analytics", href: "/analytics" },
   ];
 
   return (
@@ -20,7 +22,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="PushNask" className="h-8" />
+          <img src="/lovable-uploads/b563a053-c835-4b5c-bd58-fc56d8bef471.png" alt="PushNask" className="h-8" />
           {isOpen && <span className="font-semibold text-gray-800">PushNask</span>}
         </div>
         <button
@@ -36,7 +38,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
           <a
             key={item.label}
             href={item.href}
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors mb-1"
           >
             <item.icon className="h-5 w-5" />
             {isOpen && <span>{item.label}</span>}
