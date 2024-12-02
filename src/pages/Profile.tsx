@@ -15,7 +15,7 @@ const Profile = () => {
       title: "Profile Management",
       description: "Update your personal information and preferences",
       icon: <User className="h-5 w-5" />,
-      href: "/profile/edit",
+      href: "/profile/management",
     },
     {
       title: "Create a CV",
@@ -31,6 +31,10 @@ const Profile = () => {
     },
   ];
 
+  const handleCardClick = (section: string) => {
+    setActiveSection(section === activeSection ? null : section);
+  };
+
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
@@ -40,12 +44,14 @@ const Profile = () => {
           <div className="max-w-7xl mx-auto space-y-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {profileCards.map((card) => (
-                <ProfileCard key={card.title} {...card} />
+                <div key={card.title} onClick={() => handleCardClick(card.title.toLowerCase())}>
+                  <ProfileCard {...card} />
+                </div>
               ))}
             </div>
             
-            {activeSection === 'cv' && <CVCreator />}
-            {activeSection === 'services' && <ServiceSetup />}
+            {activeSection === 'create a cv' && <CVCreator />}
+            {activeSection === 'service setup' && <ServiceSetup />}
           </div>
         </main>
       </div>
