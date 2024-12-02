@@ -5,6 +5,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Printer, Download, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import Sidebar from "@/components/Sidebar";
+import DashboardHeader from "@/components/DashboardHeader";
 
 type Region = {
   id: string;
@@ -51,6 +53,7 @@ const regions: Region[] = [
 ];
 
 const CVCreator = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [remainingFreePrints, setRemainingFreePrints] = useState(2);
   const { toast } = useToast();
@@ -73,12 +76,18 @@ const CVCreator = () => {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>CV Creator</CardTitle>
-        <CardDescription>Create a professional CV tailored to your region</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="min-h-screen bg-[#F6F8FA]">
+      <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+        <DashboardHeader />
+        <main className="p-4 md:p-6">
+          <div className="max-w-7xl mx-auto">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>CV Creator</CardTitle>
+                <CardDescription>Create a professional CV tailored to your region</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Select Your Region</h3>
           <RadioGroup
@@ -132,8 +141,12 @@ const CVCreator = () => {
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 };
 

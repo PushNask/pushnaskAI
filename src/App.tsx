@@ -9,6 +9,9 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
+import ProfileManagement from "./pages/profile/ProfileManagement";
+import CVCreator from "./components/profile/CVCreator";
+import ServiceSetup from "./components/profile/ServiceSetup";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
           <Route path="/ai-advisor" element={<AIAdvisor />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/management" element={<ProfileManagement />} />
+          <Route path="/profile/cv" element={<CVCreator />} />
+          <Route path="/profile/services" element={<ServiceSetup />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/analytics" element={<Analytics />} />
         </Routes>

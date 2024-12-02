@@ -3,12 +3,9 @@ import { User, FileText, Settings } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import ProfileCard from "@/components/profile/ProfileCard";
-import CVCreator from "@/components/profile/CVCreator";
-import ServiceSetup from "@/components/profile/ServiceSetup";
 
 const Profile = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const profileCards = [
     {
@@ -31,27 +28,18 @@ const Profile = () => {
     },
   ];
 
-  const handleCardClick = (section: string) => {
-    setActiveSection(section === activeSection ? null : section);
-  };
-
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
         <DashboardHeader />
         <main className="p-4 md:p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+          <div className="max-w-7xl mx-auto">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {profileCards.map((card) => (
-                <div key={card.title} onClick={() => handleCardClick(card.title.toLowerCase())}>
-                  <ProfileCard {...card} />
-                </div>
+                <ProfileCard key={card.title} {...card} />
               ))}
             </div>
-            
-            {activeSection === 'create a cv' && <CVCreator />}
-            {activeSection === 'service setup' && <ServiceSetup />}
           </div>
         </main>
       </div>
