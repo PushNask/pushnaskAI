@@ -5,7 +5,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData } from "../types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
 const latinAmericaFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -21,14 +21,10 @@ const latinAmericaFormSchema = z.object({
   references: z.string().optional(),
 });
 
-interface LatinAmericaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const LatinAmericaForm = ({ onSubmit }: LatinAmericaFormProps) => {
+const LatinAmericaForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(latinAmericaFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",

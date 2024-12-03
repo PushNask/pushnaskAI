@@ -30,12 +30,6 @@ export type CVFormData = {
   careerObjective?: string;
 };
 
-export const baseFormSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-});
-
 export interface BaseFormProps {
   onSubmit: (data: CVFormData) => void;
   initialData?: CVFormData | null;

@@ -5,7 +5,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData } from "../types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
 const oceaniaFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -21,14 +21,10 @@ const oceaniaFormSchema = z.object({
   references: z.string().optional(),
 });
 
-interface OceaniaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const OceaniaForm = ({ onSubmit }: OceaniaFormProps) => {
+const OceaniaForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(oceaniaFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",

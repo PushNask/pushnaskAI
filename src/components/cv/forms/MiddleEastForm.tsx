@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData } from "./types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
 const middleEastFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -23,14 +23,10 @@ const middleEastFormSchema = z.object({
   visaStatus: z.string().optional(),
 });
 
-interface MiddleEastFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const MiddleEastForm = ({ onSubmit }: MiddleEastFormProps) => {
+const MiddleEastForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(middleEastFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",

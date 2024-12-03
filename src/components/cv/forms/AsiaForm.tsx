@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData } from "./types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
 const asiaFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -21,14 +21,10 @@ const asiaFormSchema = z.object({
   maritalStatus: z.string().optional(),
 });
 
-interface AsiaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const AsiaForm = ({ onSubmit }: AsiaFormProps) => {
+const AsiaForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(asiaFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",
