@@ -6,26 +6,38 @@ import { useToast } from "@/hooks/use-toast";
 
 type Region = "northAmerica" | "europe" | "asia" | "middleEast" | "africa" | "oceania" | "latinAmerica";
 
-const CVEditor = () => {
-  const [selectedRegion, setSelectedRegion] = useState<Region>("northAmerica");
+interface CVEditorProps {
+  selectedRegion: string;
+}
+
+const CVEditor = ({ selectedRegion }: CVEditorProps) => {
+  const [activeRegion, setActiveRegion] = useState<Region>("northAmerica");
   const { toast } = useToast();
 
   const handleRegionChange = (region: Region) => {
-    setSelectedRegion(region);
+    setActiveRegion(region);
     toast({
       title: "Region Changed",
       description: `CV format changed to ${region.replace(/([A-Z])/g, " $1").trim()} region`,
     });
   };
 
+  const handleFormSubmit = (data: any) => {
+    toast({
+      title: "CV Information Saved",
+      description: "Your CV information has been saved successfully.",
+    });
+    console.log(data);
+  };
+
   const renderForm = () => {
-    switch (selectedRegion) {
+    switch (activeRegion) {
       case "northAmerica":
-        return <NorthAmericaForm />;
+        return <NorthAmericaForm onSubmit={handleFormSubmit} />;
       case "europe":
         return <EuropeForm />;
       default:
-        return <div>Form for {selectedRegion} coming soon</div>;
+        return <div>Form for {activeRegion} coming soon</div>;
     }
   };
 
@@ -34,7 +46,7 @@ const CVEditor = () => {
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">Select Region</label>
         <select
-          value={selectedRegion}
+          value={activeRegion}
           onChange={(e) => handleRegionChange(e.target.value as Region)}
           className="w-full p-2 border rounded-md"
         >
