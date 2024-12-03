@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { FormField } from "../cv/forms/components/FormField";
-import { TextAreaField } from "../cv/forms/components/TextAreaField";
+import { FormField } from "./components/FormField";
+import { TextAreaField } from "./components/TextAreaField";
 import { StudyAbroadFormData } from "./types/serviceFormTypes";
 
 const studyAbroadFormSchema = z.object({
@@ -12,8 +12,8 @@ const studyAbroadFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   currentEducation: z.string().min(10, "Please provide your current education details"),
-  fieldOfStudy: z.string().min(5, "Please specify your desired field of study"),
   preferredCountries: z.string().min(2, "Please list your preferred countries"),
+  fieldOfStudy: z.string().min(5, "Please specify your desired field of study"),
   academicAchievements: z.string().min(10, "Please list your academic achievements"),
   languageProficiency: z.string().min(5, "Please specify your language proficiency"),
   budgetRange: z.string().min(2, "Please specify your budget range"),
@@ -28,6 +28,19 @@ interface StudyAbroadFormProps {
 const StudyAbroadForm = ({ onSubmit }: StudyAbroadFormProps) => {
   const form = useForm<StudyAbroadFormData>({
     resolver: zodResolver(studyAbroadFormSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      currentEducation: "",
+      preferredCountries: "",
+      fieldOfStudy: "",
+      academicAchievements: "",
+      languageProficiency: "",
+      budgetRange: "",
+      startDate: "",
+      additionalInfo: "",
+    },
   });
 
   return (

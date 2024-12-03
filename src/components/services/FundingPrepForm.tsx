@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { FormField } from "../cv/forms/components/FormField";
-import { TextAreaField } from "../cv/forms/components/TextAreaField";
+import { FormField } from "./components/FormField";
+import { TextAreaField } from "./components/TextAreaField";
 import { FundingPrepFormData } from "./types/serviceFormTypes";
 
 const fundingPrepFormSchema = z.object({
@@ -29,6 +29,20 @@ interface FundingPrepFormProps {
 const FundingPrepForm = ({ onSubmit }: FundingPrepFormProps) => {
   const form = useForm<FundingPrepFormData>({
     resolver: zodResolver(fundingPrepFormSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      businessName: "",
+      businessDescription: "",
+      fundingAmount: "",
+      useOfFunds: "",
+      marketAnalysis: "",
+      financialProjections: "",
+      currentProgress: "",
+      teamComposition: "",
+      competitiveAdvantage: "",
+    },
   });
 
   return (

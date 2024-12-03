@@ -1,12 +1,10 @@
-import { z } from "zod";
-
 export type StudyAbroadFormData = {
   fullName: string;
   email: string;
   phone: string;
   currentEducation: string;
-  fieldOfStudy: string;
   preferredCountries: string;
+  fieldOfStudy: string;
   academicAchievements: string;
   languageProficiency: string;
   budgetRange: string;
@@ -28,9 +26,3 @@ export type FundingPrepFormData = {
   teamComposition: string;
   competitiveAdvantage: string;
 };
-
-export const baseServiceFormSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-});
