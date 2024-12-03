@@ -5,9 +5,12 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData, baseFormSchema } from "../types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
-const formSchema = baseFormSchema.extend({
+const formSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
   linkedin: z.string().url("Invalid LinkedIn URL").optional(),
   location: z.string().optional(),
   careerObjective: z.string().max(500, "Career objective must be less than 500 characters"),
@@ -17,14 +20,10 @@ const formSchema = baseFormSchema.extend({
   extras: z.string().optional(),
 });
 
-interface NorthAmericaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
+const NorthAmericaForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",
