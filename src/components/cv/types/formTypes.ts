@@ -14,6 +14,7 @@ export type CVFormData = {
   professionalSummary?: string;
   technicalSkills?: string;
   softSkills?: string;
+  hobbies?: string;
   extras?: string;
   certifications?: string;
   achievements?: string;
