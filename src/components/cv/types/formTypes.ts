@@ -16,25 +16,6 @@ export type CVFormData = {
   softSkills?: string;
   hobbies?: string;
   references?: string;
-  // Study Abroad specific fields
-  currentEducation?: string;
-  fieldOfStudy?: string;
-  preferredCountries?: string;
-  academicAchievements?: string;
-  languageProficiency?: string;
-  budgetRange?: string;
-  startDate?: string;
-  additionalInfo?: string;
-  // Funding Prep specific fields
-  businessName?: string;
-  businessDescription?: string;
-  fundingAmount?: string;
-  useOfFunds?: string;
-  marketAnalysis?: string;
-  financialProjections?: string;
-  currentProgress?: string;
-  teamComposition?: string;
-  competitiveAdvantage?: string;
   // Additional fields for Asia and Middle East forms
   nationality?: string;
   dateOfBirth?: string;
