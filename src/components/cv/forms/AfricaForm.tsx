@@ -5,7 +5,7 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "./components/FormField";
 import { TextAreaField } from "./components/TextAreaField";
-import { CVFormData } from "../types/formTypes";
+import { CVFormData, BaseFormProps } from "../types/formTypes";
 
 const africaFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -21,14 +21,10 @@ const africaFormSchema = z.object({
   references: z.string().min(20, "References are typically required in African CVs"),
 });
 
-interface AfricaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
-
-const AfricaForm = ({ onSubmit }: AfricaFormProps) => {
+const AfricaForm = ({ onSubmit, initialData }: BaseFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(africaFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       fullName: "",
       email: "",
       phone: "",
