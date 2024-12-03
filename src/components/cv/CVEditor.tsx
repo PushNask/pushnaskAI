@@ -4,10 +4,8 @@ import NorthAmericaForm from "./forms/NorthAmericaForm";
 import EuropeForm from "./forms/EuropeForm";
 import AsiaForm from "./forms/AsiaForm";
 import MiddleEastForm from "./forms/MiddleEastForm";
-import StudyAbroadForm from "./forms/StudyAbroadForm";
-import FundingPrepForm from "./forms/FundingPrepForm";
 
-type Region = "north-america" | "europe" | "asia" | "middle-east" | "africa" | "oceania" | "latin-america" | "study-abroad" | "funding-prep";
+type Region = "north-america" | "europe" | "asia" | "middle-east" | "africa" | "oceania" | "latin-america";
 
 interface CVEditorProps {
   selectedRegion: string;
@@ -46,12 +44,8 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
         return <AsiaForm onSubmit={handleFormSubmit} />;
       case "middle-east":
         return <MiddleEastForm onSubmit={handleFormSubmit} />;
-      case "study-abroad":
-        return <StudyAbroadForm onSubmit={handleFormSubmit} />;
-      case "funding-prep":
-        return <FundingPrepForm onSubmit={handleFormSubmit} />;
       default:
-        return <div>Form for {activeRegion} coming soon</div>;
+        return <div>Form for {activeRegion.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} coming soon</div>;
     }
   };
 
