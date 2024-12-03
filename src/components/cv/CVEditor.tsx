@@ -4,6 +4,9 @@ import NorthAmericaForm from "./forms/NorthAmericaForm";
 import EuropeForm from "./forms/EuropeForm";
 import AsiaForm from "./forms/AsiaForm";
 import MiddleEastForm from "./forms/MiddleEastForm";
+import OceaniaForm from "./forms/OceaniaForm";
+import LatinAmericaForm from "./forms/LatinAmericaForm";
+import AfricaForm from "./forms/AfricaForm";
 
 type Region = "north-america" | "europe" | "asia" | "middle-east" | "africa" | "oceania" | "latin-america";
 
@@ -44,6 +47,12 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
         return <AsiaForm onSubmit={handleFormSubmit} />;
       case "middle-east":
         return <MiddleEastForm onSubmit={handleFormSubmit} />;
+      case "oceania":
+        return <OceaniaForm onSubmit={handleFormSubmit} />;
+      case "latin-america":
+        return <LatinAmericaForm onSubmit={handleFormSubmit} />;
+      case "africa":
+        return <AfricaForm onSubmit={handleFormSubmit} />;
       default:
         return <div>Form for {activeRegion.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} coming soon</div>;
     }
