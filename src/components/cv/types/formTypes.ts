@@ -20,7 +20,6 @@ export type CVFormData = {
   achievements?: string;
   languages?: string;
   references?: string;
-  // Additional fields for Asia and Middle East forms
   nationality?: string;
   dateOfBirth?: string;
   maritalStatus?: string;

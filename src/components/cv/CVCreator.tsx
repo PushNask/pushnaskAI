@@ -41,10 +41,12 @@ const CVCreator = () => {
         <main className="p-4 md:p-6">
           <div className="max-w-7xl mx-auto">
             <Card className="w-full">
-              <CardHeader>
-                <CardTitle>CV Creator</CardTitle>
-                <CardDescription>Create a professional CV tailored to your region</CardDescription>
-              </CardHeader>
+              {!showEditor && (
+                <CardHeader>
+                  <CardTitle>CV Creator</CardTitle>
+                  <CardDescription>Create a professional CV tailored to your region</CardDescription>
+                </CardHeader>
+              )}
               <CardContent className="space-y-6">
                 {!showEditor ? (
                   <>
