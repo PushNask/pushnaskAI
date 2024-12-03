@@ -1,20 +1,21 @@
 import { FormControl, FormField as Field, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { CVFormData } from "../types/formTypes";
 
 interface FormFieldProps {
-  form: UseFormReturn<CVFormData>;
+  form?: any;
+  control: Control<CVFormData>;
   name: keyof CVFormData;
   label: string;
   placeholder?: string;
   type?: string;
 }
 
-export const FormField = ({ form, name, label, placeholder, type = "text" }: FormFieldProps) => {
+export const FormField = ({ control, name, label, placeholder, type = "text" }: FormFieldProps) => {
   return (
     <Field
-      control={form.control}
+      control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
@@ -23,8 +24,7 @@ export const FormField = ({ form, name, label, placeholder, type = "text" }: For
             <Input 
               type={type} 
               placeholder={placeholder} 
-              {...field} 
-              name={field.name}
+              {...field}
             />
           </FormControl>
           <FormMessage />

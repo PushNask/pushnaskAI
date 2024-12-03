@@ -1,20 +1,21 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { UseFormReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { CVFormData } from "../types/formTypes";
 
 interface TextAreaFieldProps {
-  form: UseFormReturn<CVFormData>;
+  form?: any;
+  control: Control<CVFormData>;
   name: keyof CVFormData;
   label: string;
   placeholder?: string;
   rows?: number;
 }
 
-export const TextAreaField = ({ form, name, label, placeholder, rows = 3 }: TextAreaFieldProps) => {
+export const TextAreaField = ({ control, name, label, placeholder, rows = 3 }: TextAreaFieldProps) => {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
@@ -24,7 +25,6 @@ export const TextAreaField = ({ form, name, label, placeholder, rows = 3 }: Text
               rows={rows} 
               placeholder={placeholder} 
               {...field}
-              name={field.name}
             />
           </FormControl>
           <FormMessage />
