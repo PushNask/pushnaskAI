@@ -12,6 +12,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { CVFormData } from "../CVEditor";
+
+interface NorthAmericaFormProps {
+  onSubmit: (data: CVFormData) => void;
+}
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -26,26 +31,17 @@ const formSchema = z.object({
   extras: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
-interface NorthAmericaFormProps {
-  onSubmit: (data: FormValues) => void;
-}
-
 const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
-  const form = useForm<FormValues>({
+  const form = useForm<CVFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
       email: "",
       phone: "",
-      linkedin: "",
-      location: "",
-      careerObjective: "",
-      workExperience: "",
+      address: "",
       education: "",
+      workExperience: "",
       skills: "",
-      extras: "",
     },
   });
 

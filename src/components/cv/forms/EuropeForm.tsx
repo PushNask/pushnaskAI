@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { CVFormData } from "../CVEditor";
+
+interface EuropeFormProps {
+  onSubmit: (data: CVFormData) => void;
+}
 
 const europeFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -25,28 +30,23 @@ const europeFormSchema = z.object({
   references: z.string().optional(),
 });
 
-type EuropeFormValues = z.infer<typeof europeFormSchema>;
-
-const EuropeForm = () => {
+const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
   const { toast } = useToast();
-  const form = useForm<EuropeFormValues>({
+  const form = useForm<CVFormData>({
     resolver: zodResolver(europeFormSchema),
     defaultValues: {
       fullName: "",
       address: "",
       phone: "",
       email: "",
-      careerSummary: "",
       education: "",
       workExperience: "",
-      languages: "",
-      technicalSkills: "",
-      softSkills: "",
+      skills: "",
     },
   });
 
-  const onSubmit = (data: EuropeFormValues) => {
-    console.log(data);
+  const handleSubmit = (data: CVFormData) => {
+    onSubmit(data);
     toast({
       title: "CV Information Saved",
       description: "Your European format CV information has been saved successfully.",
@@ -54,7 +54,7 @@ const EuropeForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
