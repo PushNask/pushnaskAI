@@ -20,7 +20,12 @@ export const FormField = ({ form, name, label, placeholder, type = "text" }: For
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input type={type} placeholder={placeholder} {...field} />
+            <Input 
+              type={type} 
+              placeholder={placeholder} 
+              {...field} 
+              name={field.name}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

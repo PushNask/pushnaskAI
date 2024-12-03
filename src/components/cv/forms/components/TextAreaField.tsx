@@ -20,7 +20,12 @@ export const TextAreaField = ({ form, name, label, placeholder, rows = 3 }: Text
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Textarea rows={rows} placeholder={placeholder} {...field} />
+            <Textarea 
+              rows={rows} 
+              placeholder={placeholder} 
+              {...field}
+              name={field.name}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
