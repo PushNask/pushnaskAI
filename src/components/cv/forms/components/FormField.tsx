@@ -1,7 +1,7 @@
 import { FormControl, FormField as Field, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Control } from "react-hook-form";
-import { CVFormData } from "../types/formTypes";
+import { CVFormData } from "../../types/formTypes";
 
 interface FormFieldProps {
   form?: any;

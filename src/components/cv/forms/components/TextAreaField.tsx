@@ -1,10 +1,9 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Control } from "react-hook-form";
-import { CVFormData } from "../types/formTypes";
+import { CVFormData } from "../../types/formTypes";
 
 interface TextAreaFieldProps {
-  form?: any;
   control: Control<CVFormData>;
   name: keyof CVFormData;
   label: string;

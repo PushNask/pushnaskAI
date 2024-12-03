@@ -8,16 +8,6 @@ export type CVFormData = {
   education: string;
   workExperience: string;
   skills: string;
-  personalStatement: string;  // Required for AfricaForm
-  personalInfo: string;       // Required for LatinAmericaForm
-  objective: string;          // Required for LatinAmericaForm
-  professionalSummary: string; // Required for OceaniaForm
-  technicalSkills?: string;
-  softSkills?: string;
-  hobbies?: string;
-  extras?: string;
-  certifications: string;     // Required for AfricaForm and OceaniaForm
-  achievements: string;       // Required for OceaniaForm
   languages?: string;
   references?: string;
   nationality?: string;
@@ -28,6 +18,16 @@ export type CVFormData = {
   linkedin?: string;
   location?: string;
   careerObjective?: string;
+  technicalSkills?: string;
+  softSkills?: string;
+  hobbies?: string;
+  extras?: string;
+  personalStatement?: string;
+  personalInfo?: string;
+  objective?: string;
+  professionalSummary?: string;
+  certifications?: string;
+  achievements?: string;
 };
 
 export interface BaseFormProps {
@@ -42,12 +42,12 @@ export const baseFormSchema = z.object({
   education: z.string().min(10, "Education details are required"),
   workExperience: z.string().min(10, "Work experience is required"),
   skills: z.string().min(5, "Skills are required"),
-  personalStatement: z.string().min(20, "Personal statement is required"),
-  personalInfo: z.string().min(20, "Personal information is required"),
-  objective: z.string().min(20, "Objective is required"),
-  professionalSummary: z.string().min(20, "Professional summary is required"),
-  certifications: z.string().min(10, "Certifications are required"),
-  achievements: z.string().min(10, "Achievements are required"),
+  personalStatement: z.string().optional(),
+  personalInfo: z.string().optional(),
+  objective: z.string().optional(),
+  professionalSummary: z.string().optional(),
+  certifications: z.string().optional(),
+  achievements: z.string().optional(),
   languages: z.string().optional(),
   references: z.string().optional(),
   nationality: z.string().optional(),
