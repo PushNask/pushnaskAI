@@ -43,26 +43,26 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
-            form={form}
+            control={form.control}
             name="fullName"
             label="Full Name"
             placeholder="John Doe"
           />
           <FormField
-            form={form}
+            control={form.control}
             name="email"
             label="Email"
             type="email"
             placeholder="john@example.com"
           />
           <FormField
-            form={form}
+            control={form.control}
             name="phone"
             label="Phone"
             placeholder="+1 (555) 000-0000"
           />
           <FormField
-            form={form}
+            control={form.control}
             name="linkedin"
             label="LinkedIn Profile (Optional)"
             placeholder="https://linkedin.com/in/johndoe"
@@ -70,7 +70,7 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
         </div>
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="careerObjective"
           label="Career Objective"
           placeholder="Brief summary of your career goals and professional experience..."
@@ -78,7 +78,7 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="workExperience"
           label="Work Experience"
           placeholder="List your work experience with measurable achievements..."
@@ -86,7 +86,7 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="education"
           label="Education & Certifications"
           placeholder="List your educational background and certifications..."
@@ -94,7 +94,7 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="skills"
           label="Skills"
           placeholder="List your technical, soft, and language skills..."
@@ -102,7 +102,7 @@ const NorthAmericaForm = ({ onSubmit }: NorthAmericaFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="extras"
           label="Additional Information (Optional)"
           placeholder="Volunteer work, projects, or other relevant information..."

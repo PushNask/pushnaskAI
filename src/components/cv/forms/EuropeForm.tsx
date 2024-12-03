@@ -43,20 +43,20 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
-            form={form}
+            control={form.control}
             name="fullName"
             label="Full Name"
             placeholder="John Doe"
           />
           <FormField
-            form={form}
+            control={form.control}
             name="email"
             label="Email"
             type="email"
             placeholder="john@example.com"
           />
           <FormField
-            form={form}
+            control={form.control}
             name="phone"
             label="Phone"
             placeholder="+1 (555) 000-0000"
@@ -64,7 +64,7 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
         </div>
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="education"
           label="Education"
           placeholder="Your educational background..."
@@ -72,7 +72,7 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="workExperience"
           label="Work Experience"
           placeholder="Your work experience..."
@@ -80,14 +80,14 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
         />
 
         <FormField
-          form={form}
+          control={form.control}
           name="languages"
           label="Languages"
           placeholder="English (Native), French (B2), German (A2)"
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="technicalSkills"
           label="Technical Skills"
           placeholder="Your technical skills..."
@@ -95,7 +95,7 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="softSkills"
           label="Soft Skills"
           placeholder="Your soft skills..."
@@ -103,14 +103,14 @@ const EuropeForm = ({ onSubmit }: EuropeFormProps) => {
         />
 
         <FormField
-          form={form}
+          control={form.control}
           name="hobbies"
           label="Hobbies (Optional)"
           placeholder="Your hobbies and interests"
         />
 
         <TextAreaField
-          form={form}
+          control={form.control}
           name="references"
           label="References (Optional)"
           placeholder="Your references..."
