@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import NorthAmericaForm from "./forms/NorthAmericaForm";
 import EuropeForm from "./forms/EuropeForm";
-import { useToast } from "@/hooks/use-toast";
+import AsiaForm from "./forms/AsiaForm";
+import MiddleEastForm from "./forms/MiddleEastForm";
 
 type Region = "northAmerica" | "europe" | "asia" | "middleEast" | "africa" | "oceania" | "latinAmerica";
 
@@ -35,14 +36,18 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
       case "northAmerica":
         return <NorthAmericaForm onSubmit={handleFormSubmit} />;
       case "europe":
-        return <EuropeForm />;
+        return <EuropeForm onSubmit={handleFormSubmit} />;
+      case "asia":
+        return <AsiaForm onSubmit={handleFormSubmit} />;
+      case "middleEast":
+        return <MiddleEastForm onSubmit={handleFormSubmit} />;
       default:
         return <div>Form for {activeRegion} coming soon</div>;
     }
   };
 
   return (
-    <Card className="p-6">
+    <div className="space-y-6">
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">Select Region</label>
         <select
@@ -61,7 +66,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
       </div>
 
       {renderForm()}
-    </Card>
+    </div>
   );
 };
 
