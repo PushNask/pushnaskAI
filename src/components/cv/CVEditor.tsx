@@ -37,6 +37,13 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
     console.log(data);
   };
 
+  const formatRegionName = (region: string) => {
+    return region
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const renderForm = () => {
     switch (activeRegion) {
       case "north-america":
@@ -54,7 +61,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
       case "africa":
         return <AfricaForm onSubmit={handleFormSubmit} />;
       default:
-        return <div>Form for {activeRegion.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</div>;
+        return <div>Form for {formatRegionName(activeRegion)}</div>;
     }
   };
 
@@ -62,7 +69,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
     <div className="space-y-6">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold mb-4">
-          CV Editor - {activeRegion.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+          CV Editor - {formatRegionName(activeRegion)}
         </h2>
       </div>
       {renderForm()}

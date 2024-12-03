@@ -4,17 +4,17 @@ export type CVFormData = {
   fullName: string;
   email: string;
   phone: string;
-  linkedin?: string;
-  location?: string;
-  careerObjective?: string;
-  workExperience: string;
+  address?: string;
   education: string;
+  workExperience: string;
   skills: string;
   personalStatement?: string;
   personalInfo?: string;
   objective?: string;
   professionalSummary?: string;
-  keySkills?: string;
+  technicalSkills?: string;
+  softSkills?: string;
+  extras?: string;
   certifications?: string;
   achievements?: string;
   languages?: string;
@@ -25,6 +25,9 @@ export type CVFormData = {
   maritalStatus?: string;
   religion?: string;
   visaStatus?: string;
+  linkedin?: string;
+  location?: string;
+  careerObjective?: string;
 };
 
 export const baseFormSchema = z.object({
