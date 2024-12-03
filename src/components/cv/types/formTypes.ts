@@ -10,11 +10,14 @@ export type CVFormData = {
   workExperience: string;
   education: string;
   skills: string;
-  extras?: string;
+  personalStatement?: string;
+  personalInfo?: string;
+  objective?: string;
+  professionalSummary?: string;
+  keySkills?: string;
+  certifications?: string;
+  achievements?: string;
   languages?: string;
-  technicalSkills?: string;
-  softSkills?: string;
-  hobbies?: string;
   references?: string;
   // Additional fields for Asia and Middle East forms
   nationality?: string;

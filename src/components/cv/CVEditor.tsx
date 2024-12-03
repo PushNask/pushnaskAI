@@ -19,9 +19,9 @@ export type CVFormData = {
   email: string;
   phone: string;
   address?: string;
-  education?: string;
-  workExperience?: string;
-  skills?: string;
+  education: string;
+  workExperience: string;
+  skills: string;
   [key: string]: any;
 };
 
@@ -54,7 +54,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
       case "africa":
         return <AfricaForm onSubmit={handleFormSubmit} />;
       default:
-        return <div>Form for {activeRegion.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} coming soon</div>;
+        return <div>Form for {activeRegion.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</div>;
     }
   };
 
@@ -62,7 +62,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
     <div className="space-y-6">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold mb-4">
-          CV Editor - {activeRegion.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          CV Editor - {activeRegion.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
         </h2>
       </div>
       {renderForm()}

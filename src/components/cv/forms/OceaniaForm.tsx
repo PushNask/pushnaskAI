@@ -13,7 +13,7 @@ const oceaniaFormSchema = z.object({
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   location: z.string().min(2, "Location is required"),
   professionalSummary: z.string().min(50, "Professional summary must be at least 50 characters"),
-  keySkills: z.string().min(20, "Please list your key skills"),
+  skills: z.string().min(20, "Please list your key skills"),
   workExperience: z.string().min(50, "Please provide detailed work experience"),
   education: z.string().min(20, "Please provide your educational background"),
   certifications: z.string().optional(),
@@ -34,7 +34,7 @@ const OceaniaForm = ({ onSubmit }: OceaniaFormProps) => {
       phone: "",
       location: "",
       professionalSummary: "",
-      keySkills: "",
+      skills: "",
       workExperience: "",
       education: "",
       certifications: "",
@@ -84,7 +84,7 @@ const OceaniaForm = ({ onSubmit }: OceaniaFormProps) => {
 
         <TextAreaField
           control={form.control}
-          name="keySkills"
+          name="skills"
           label="Key Skills"
           placeholder="List your key technical and soft skills..."
           rows={4}
