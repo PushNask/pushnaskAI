@@ -11,6 +11,18 @@ interface CVEditorProps {
   selectedRegion: string;
 }
 
+// Define a common type for form data
+export type CVFormData = {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  education: string;
+  workExperience: string;
+  skills: string;
+  [key: string]: any; // Allow for additional fields specific to each region
+};
+
 const CVEditor = ({ selectedRegion }: CVEditorProps) => {
   const [activeRegion, setActiveRegion] = useState<Region>("northAmerica");
   const { toast } = useToast();
@@ -23,7 +35,7 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
     });
   };
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: CVFormData) => {
     toast({
       title: "CV Information Saved",
       description: "Your CV information has been saved successfully.",
