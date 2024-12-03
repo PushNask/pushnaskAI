@@ -8,16 +8,16 @@ export type CVFormData = {
   education: string;
   workExperience: string;
   skills: string;
-  personalStatement?: string;
-  personalInfo?: string;
-  objective?: string;
-  professionalSummary?: string;
+  personalStatement?: string;  // Added for AfricaForm
+  personalInfo?: string;       // Added for LatinAmericaForm
+  objective?: string;          // Added for LatinAmericaForm
+  professionalSummary?: string; // Added for OceaniaForm
   technicalSkills?: string;
   softSkills?: string;
   hobbies?: string;
   extras?: string;
-  certifications?: string;
-  achievements?: string;
+  certifications?: string;     // Added for AfricaForm and OceaniaForm
+  achievements?: string;       // Added for OceaniaForm
   languages?: string;
   references?: string;
   nationality?: string;
