@@ -1,24 +1,30 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { CVFormData } from "../CVEditor";
-
-interface AsiaFormProps {
-  onSubmit: (data: CVFormData) => void;
-}
+import { Form } from "@/components/ui/form";
+import FormField from "./components/FormField";
+import TextAreaField from "./components/TextAreaField";
+import { CVFormData } from "./types/formTypes";
 
 const asiaFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  address: z.string().min(5, "Please enter a valid address"),
-  education: z.string(),
-  workExperience: z.string(),
-  skills: z.string(),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  education: z.string().min(10, "Education details must be at least 10 characters"),
+  workExperience: z.string().min(10, "Work experience must be at least 10 characters"),
+  skills: z.string().min(5, "Skills must be at least 5 characters"),
+  languages: z.string().min(2, "Languages must be at least 2 characters"),
+  photo: z.string().optional(),
+  nationality: z.string().min(2, "Nationality must be at least 2 characters"),
+  dateOfBirth: z.string().min(2, "Date of birth is required"),
+  maritalStatus: z.string().optional(),
 });
+
+interface AsiaFormProps {
+  onSubmit: (data: CVFormData) => void;
+}
 
 const AsiaForm = ({ onSubmit }: AsiaFormProps) => {
   const form = useForm<CVFormData>({
@@ -31,71 +37,91 @@ const AsiaForm = ({ onSubmit }: AsiaFormProps) => {
       education: "",
       workExperience: "",
       skills: "",
+      languages: "",
+      nationality: "",
+      dateOfBirth: "",
+      maritalStatus: "",
     },
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="block text-sm font-medium mb-1">Full Name</label>
-          <Input type="text" {...form.register("fullName")} />
-          {form.formState.errors.fullName && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.fullName.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <Input type="email" {...form.register("email")} />
-          {form.formState.errors.email && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.email.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Phone</label>
-          <Input type="tel" {...form.register("phone")} />
-          {form.formState.errors.phone && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.phone.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Address</label>
-          <Input type="text" {...form.register("address")} />
-          {form.formState.errors.address && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.address.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Education</label>
-        <Textarea rows={4} {...form.register("education")} />
-        {form.formState.errors.education && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.education.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Work Experience</label>
-        <Textarea rows={6} {...form.register("workExperience")} />
-        {form.formState.errors.workExperience && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.workExperience.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Skills</label>
-        <Textarea rows={3} {...form.register("skills")} />
-        {form.formState.errors.skills && (
-          <p className="text-red-500 text-sm mt-1">{form.formState.errors.skills.message}</p>
-        )}
-      </div>
-
-      <Button type="submit" className="w-full">Save CV Information</Button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="fullName"
+          label="Full Name"
+          placeholder="Enter your full name"
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+        />
+        <FormField
+          control={form.control}
+          name="phone"
+          label="Phone"
+          placeholder="Enter your phone number"
+        />
+        <FormField
+          control={form.control}
+          name="address"
+          label="Address"
+          placeholder="Enter your address"
+        />
+        <FormField
+          control={form.control}
+          name="nationality"
+          label="Nationality"
+          placeholder="Enter your nationality"
+        />
+        <FormField
+          control={form.control}
+          name="dateOfBirth"
+          label="Date of Birth"
+          type="date"
+          placeholder="Select your date of birth"
+        />
+        <FormField
+          control={form.control}
+          name="maritalStatus"
+          label="Marital Status"
+          placeholder="Enter your marital status"
+        />
+        <TextAreaField
+          control={form.control}
+          name="education"
+          label="Education"
+          placeholder="Enter your educational background"
+          rows={4}
+        />
+        <TextAreaField
+          control={form.control}
+          name="workExperience"
+          label="Work Experience"
+          placeholder="Enter your work experience"
+          rows={4}
+        />
+        <TextAreaField
+          control={form.control}
+          name="skills"
+          label="Skills"
+          placeholder="Enter your skills"
+          rows={3}
+        />
+        <TextAreaField
+          control={form.control}
+          name="languages"
+          label="Languages"
+          placeholder="Enter languages you know"
+          rows={2}
+        />
+        <Button type="submit" className="w-full">Save CV</Button>
+      </form>
+    </Form>
   );
 };
 

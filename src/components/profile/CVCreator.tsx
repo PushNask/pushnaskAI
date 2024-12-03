@@ -7,11 +7,13 @@ import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import RegionSelector from "@/components/cv/RegionSelector";
 import PrintControls from "@/components/cv/PrintControls";
+import CVEditor from "@/components/cv/CVEditor";
 
 const CVCreator = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [remainingFreePrints, setRemainingFreePrints] = useState(2);
+  const [showEditor, setShowEditor] = useState(false);
   const { toast } = useToast();
 
   const handlePrint = () => {
@@ -44,23 +46,32 @@ const CVCreator = () => {
                 <CardDescription>Create a professional CV tailored to your region</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <RegionSelector 
-                  selectedRegion={selectedRegion} 
-                  onRegionChange={setSelectedRegion} 
-                />
-
-                {selectedRegion && (
+                {!showEditor ? (
                   <>
-                    <PrintControls 
-                      remainingFreePrints={remainingFreePrints}
-                      onPrint={handlePrint}
+                    <RegionSelector 
+                      selectedRegion={selectedRegion} 
+                      onRegionChange={setSelectedRegion} 
                     />
-                    
-                    <Button className="w-full mt-4 flex items-center justify-center gap-2">
-                      Continue to CV Editor
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+
+                    {selectedRegion && (
+                      <>
+                        <PrintControls 
+                          remainingFreePrints={remainingFreePrints}
+                          onPrint={handlePrint}
+                        />
+                        
+                        <Button 
+                          className="w-full mt-4 flex items-center justify-center gap-2"
+                          onClick={() => setShowEditor(true)}
+                        >
+                          Continue to CV Editor
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </>
+                ) : (
+                  <CVEditor selectedRegion={selectedRegion} />
                 )}
               </CardContent>
             </Card>
