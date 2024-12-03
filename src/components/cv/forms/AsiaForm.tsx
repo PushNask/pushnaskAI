@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import FormField from "./components/FormField";
-import TextAreaField from "./components/TextAreaField";
+import { FormField } from "./components/FormField";
+import { TextAreaField } from "./components/TextAreaField";
 import { CVFormData } from "./types/formTypes";
 
 const asiaFormSchema = z.object({
@@ -16,7 +16,6 @@ const asiaFormSchema = z.object({
   workExperience: z.string().min(10, "Work experience must be at least 10 characters"),
   skills: z.string().min(5, "Skills must be at least 5 characters"),
   languages: z.string().min(2, "Languages must be at least 2 characters"),
-  photo: z.string().optional(),
   nationality: z.string().min(2, "Nationality must be at least 2 characters"),
   dateOfBirth: z.string().min(2, "Date of birth is required"),
   maritalStatus: z.string().optional(),

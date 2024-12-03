@@ -17,6 +17,12 @@ export type CVFormData = {
   location?: string;
   careerObjective?: string;
   extras?: string;
+  // Additional fields for Asia and Middle East forms
+  nationality?: string;
+  dateOfBirth?: string;
+  maritalStatus?: string;
+  religion?: string;
+  visaStatus?: string;
 };
 
 export const baseFormSchema = z.object({

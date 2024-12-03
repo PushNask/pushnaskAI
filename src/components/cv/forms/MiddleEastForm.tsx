@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import FormField from "./components/FormField";
-import TextAreaField from "./components/TextAreaField";
+import { FormField } from "./components/FormField";
+import { TextAreaField } from "./components/TextAreaField";
 import { CVFormData } from "./types/formTypes";
 
 const middleEastFormSchema = z.object({
