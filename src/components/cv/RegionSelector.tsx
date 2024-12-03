@@ -34,6 +34,16 @@ const regions: Region[] = [
     description: "Highly detailed with photo and personal information"
   },
   {
+    id: "study-abroad",
+    name: "Study Abroad",
+    description: "Focused on academic achievements and study plans"
+  },
+  {
+    id: "funding-prep",
+    name: "Funding Preparation",
+    description: "Business plan and funding requirements focused"
+  },
+  {
     id: "africa",
     name: "Africa",
     description: "Varies by region, multi-page CVs common in some areas"
