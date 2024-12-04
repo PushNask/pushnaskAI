@@ -10,7 +10,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
 import ProfileManagement from "./pages/profile/ProfileManagement";
-import CVCreator from "./components/profile/CVCreator";
+import CVCreator from "./components/cv/CVCreator";
 import ServiceSetup from "./components/profile/ServiceSetup";
 
 const queryClient = new QueryClient();
