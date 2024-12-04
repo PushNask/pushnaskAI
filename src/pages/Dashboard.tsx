@@ -2,8 +2,9 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import CreditBalance from "@/components/CreditBalance";
+import ServiceCards from "@/components/ServiceCards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wallet, CreditCard, History } from "lucide-react";
+import { CreditCard, History } from "lucide-react";
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -22,11 +23,12 @@ const Dashboard = () => {
         <main className="p-6">
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
-              <h1 className="text-2xl font-semibold">Credit Management</h1>
+              <h1 className="text-2xl font-semibold">Credits & Services</h1>
               <p className="text-gray-500">Monitor and manage your service credits</p>
             </div>
 
             <CreditBalance />
+            <ServiceCards />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
