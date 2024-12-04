@@ -1,10 +1,13 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, AlertTriangle } from "lucide-react";
+import { handleError } from '@/utils/errorHandling';
+import { useToast } from '@/hooks/use-toast';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
@@ -12,7 +15,7 @@ interface State {
   error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundaryClass extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null
@@ -24,6 +27,8 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
+    const errorDetails = handleError(error);
+    console.error('Processed error:', errorDetails);
   }
 
   private handleReset = () => {
@@ -33,10 +38,17 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
         <Card className="w-full max-w-md mx-auto mt-8">
-          <CardHeader>
-            <CardTitle className="text-red-600">Something went wrong</CardTitle>
+          <CardHeader className="space-y-1">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              <CardTitle className="text-red-600">Something went wrong</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-600">
@@ -57,5 +69,19 @@ class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+const ErrorBoundary = (props: Props) => {
+  const { toast } = useToast();
+
+  const handleError = (error: Error) => {
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive",
+    });
+  };
+
+  return <ErrorBoundaryClass {...props} />;
+};
 
 export default ErrorBoundary;

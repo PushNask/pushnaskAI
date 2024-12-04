@@ -10,6 +10,7 @@ import PrintControls from "@/components/cv/PrintControls";
 import CVEditor from "@/components/cv/CVEditor";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AppError, handleError } from "@/utils/errorHandling";
 
 interface LoadingProps {
   className?: string;
@@ -42,16 +43,17 @@ const CVCreator = () => {
           description: `You have ${remainingFreePrints - 1} free prints remaining.`
         });
       } else {
-        toast({
-          title: "No Free Prints Remaining",
-          description: "Please use 2 credits to print additional copies.",
-          variant: "destructive"
-        });
+        throw new AppError(
+          "No free prints remaining. Please use 2 credits to print additional copies.",
+          "NO_FREE_PRINTS",
+          403
+        );
       }
     } catch (error) {
+      const errorDetails = handleError(error);
       toast({
         title: "Print Failed",
-        description: "There was an error printing your CV. Please try again.",
+        description: errorDetails.message,
         variant: "destructive"
       });
     } finally {
