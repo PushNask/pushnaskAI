@@ -13,6 +13,7 @@ import { toast } from "./ui/use-toast";
 import { ServiceConfig } from "@/types/service";
 import { AppError, handleError } from "@/utils/errorHandling";
 import { Skeleton } from "./ui/skeleton";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const services: ServiceConfig[] = [
   {

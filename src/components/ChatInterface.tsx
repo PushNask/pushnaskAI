@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Send, Paperclip, Globe, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AppError, handleError } from "@/utils/errorHandling";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "./ui/skeleton";
 
 interface Message {
