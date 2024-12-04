@@ -24,7 +24,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/4a99b79b-d178-41d4-ad89-bd426920f7ec.png" 
+                src="/lovable-uploads/be19526a-36cc-48c3-a1e8-d8cac0a33b3a.png" 
                 alt="PushNask" 
                 className="h-10"
               />
