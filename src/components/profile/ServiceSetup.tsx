@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Briefcase, Globe, GraduationCap, LineChart } from "lucide-react";
+import { Briefcase, Globe, GraduationCap, LineChart, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import StudyAbroadForm from "@/components/services/StudyAbroadForm";
@@ -18,24 +19,32 @@ const ServiceSetup = () => {
       title: "Career Development",
       description: "Configure your career preferences and goals",
       icon: Briefcase,
+      setupTitle: "Career Development Setup",
+      setupDescription: "Accurately answer the questions below for our AI advisor to better help you make informed decisions",
     },
     {
       id: "global",
       title: "Global Exploration",
       description: "Set up your travel and relocation preferences",
       icon: Globe,
+      setupTitle: "Global Exploration Setup",
+      setupDescription: "Accurately answer the questions below for our AI advisor to better help you make informed decisions",
     },
     {
       id: "education",
       title: "Educational Guidance",
       description: "Configure your educational interests",
       icon: GraduationCap,
+      setupTitle: "Educational Guidance Setup",
+      setupDescription: "Accurately answer the questions below for our AI advisor to better help you make informed decisions",
     },
     {
       id: "business",
       title: "Entrepreneurial Support",
       description: "Set up your business interests",
       icon: LineChart,
+      setupTitle: "Entrepreneurial Support Setup",
+      setupDescription: "Accurately answer the questions below for our AI advisor to better help you make informed decisions",
     },
   ];
 
@@ -58,6 +67,10 @@ const ServiceSetup = () => {
     }
   };
 
+  const selectedServiceData = selectedService 
+    ? services.find(service => service.id === selectedService)
+    : null;
+
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
@@ -67,17 +80,30 @@ const ServiceSetup = () => {
           <div className="max-w-7xl mx-auto">
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>Service Setup</CardTitle>
-                <CardDescription>Configure your preferences for each service</CardDescription>
+                <Link to="/profile" className="flex items-center text-sm text-blue-600 hover:text-blue-800 mb-4">
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Back to profile
+                </Link>
+                <CardTitle>
+                  {selectedService 
+                    ? selectedServiceData?.setupTitle
+                    : "Service Setup"}
+                </CardTitle>
+                <CardDescription>
+                  {selectedService 
+                    ? selectedServiceData?.setupDescription
+                    : "Configure your preferences for each service"}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {selectedService ? (
                   <div>
                     <button
                       onClick={() => setSelectedService(null)}
-                      className="mb-4 text-sm text-blue-600 hover:text-blue-800"
+                      className="mb-4 text-sm text-blue-600 hover:text-blue-800 flex items-center"
                     >
-                      ← Back to services
+                      <ArrowLeft className="h-4 w-4 mr-1" />
+                      Back to services
                     </button>
                     {renderForm()}
                   </div>

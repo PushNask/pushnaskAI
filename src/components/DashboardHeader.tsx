@@ -5,7 +5,7 @@ const DashboardHeader = () => {
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex items-center gap-2">
-        <img src="/lovable-uploads/b563a053-c835-4b5c-bd58-fc56d8bef471.png" alt="PushNask" className="h-8" />
+        <img src="/lovable-uploads/d6c1b7f9-1b2c-4735-bc20-5db0396c8a64.png" alt="PushNask" className="h-8" />
         <h1 className="text-xl font-semibold text-gray-800">PushNask</h1>
       </div>
       <div className="flex items-center gap-4">

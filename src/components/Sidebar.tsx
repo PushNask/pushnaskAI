@@ -25,7 +25,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          <img src="/lovable-uploads/b563a053-c835-4b5c-bd58-fc56d8bef471.png" alt="PushNask" className="h-8" />
+          <img src="/lovable-uploads/d6c1b7f9-1b2c-4735-bc20-5db0396c8a64.png" alt="PushNask" className="h-8" />
           {isOpen && <span className="font-semibold text-gray-800">PushNask</span>}
         </div>
         <button
