@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Briefcase, Globe, GraduationCap, Wallet } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import { ServiceUsageChart } from "@/components/analytics/ServiceUsageChart";
-import { CareerDevelopmentChart } from "@/components/analytics/CareerDevelopmentChart";
+import { CareerAnalyticsChart } from "@/components/analytics/CareerAnalyticsChart";
 import { GlobalExplorationChart } from "@/components/analytics/GlobalExplorationChart";
 import { EducationalGuidanceChart } from "@/components/analytics/EducationalGuidanceChart";
 import { EntrepreneurialSupportChart } from "@/components/analytics/EntrepreneurialSupportChart";
@@ -24,14 +25,26 @@ const Analytics = () => {
             
             <Tabs defaultValue="career" className="w-full">
               <TabsList className="w-full justify-start overflow-x-auto">
-                <TabsTrigger value="career">Career Development</TabsTrigger>
-                <TabsTrigger value="global">Global Exploration</TabsTrigger>
-                <TabsTrigger value="education">Educational Guidance</TabsTrigger>
-                <TabsTrigger value="entrepreneurial">Entrepreneurial Support</TabsTrigger>
+                <TabsTrigger value="career" className="gap-2">
+                  <Briefcase className="h-4 w-4" />
+                  <span>Career Development</span>
+                </TabsTrigger>
+                <TabsTrigger value="global" className="gap-2">
+                  <Globe className="h-4 w-4" />
+                  <span>Global Exploration</span>
+                </TabsTrigger>
+                <TabsTrigger value="education" className="gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  <span>Educational Guidance</span>
+                </TabsTrigger>
+                <TabsTrigger value="entrepreneurial" className="gap-2">
+                  <Wallet className="h-4 w-4" />
+                  <span>Entrepreneurial Support</span>
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="career">
-                <CareerDevelopmentChart />
+                <CareerAnalyticsChart />
               </TabsContent>
               
               <TabsContent value="global">

@@ -1,5 +1,7 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const COLORS = ['#0EA5E9', '#8B5CF6', '#10B981', '#F97316'];
 
 const data = [
   { name: 'Career Development', value: 35 },
@@ -8,13 +10,11 @@ const data = [
   { name: 'Entrepreneurial Support', value: 20 },
 ];
 
-const COLORS = ['#0EA5E9', '#8B5CF6', '#10B981', '#F97316'];
-
 export const ServiceUsageChart = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Service Usage Distribution</CardTitle>
+        <CardTitle className="text-xl font-semibold">Service Usage Distribution</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
