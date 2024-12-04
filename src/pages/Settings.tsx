@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Language, FileText, XOctagon, Link2, User, LogOut } from "lucide-react";
+import { Languages, FileText, XOctagon, Link2, User, LogOut } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,7 @@ const Settings = () => {
           {/* Language Section */}
           <section className="space-y-4">
             <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Language className="h-5 w-5" />
+              <Languages className="h-5 w-5" />
               Language
             </h2>
             <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
