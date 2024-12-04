@@ -1,4 +1,4 @@
-import { MessageSquare, FileText, Home, User, Settings, BarChart2, Menu } from "lucide-react";
+import { MessageSquare, FileText, Wallet, User, Settings, BarChart2, Menu } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 
 interface SidebarProps {
@@ -12,7 +12,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const menuItems = [
     { icon: MessageSquare, label: "AI Advisor", href: "/ai-advisor" },
     { icon: FileText, label: "Reports", href: "/reports" },
-    { icon: Home, label: "Credits & Services", href: "/dashboard" },
+    { icon: Wallet, label: "Credits & Services", href: "/dashboard" },
     { icon: User, label: "Profile", href: "/profile" },
     { icon: Settings, label: "Settings", href: "/settings" },
     { icon: BarChart2, label: "Analytics", href: "/analytics" },
