@@ -23,9 +23,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/ai-advisor" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/ai-advisor" element={<AIAdvisor />} />
           <Route path="/reports" element={<Reports />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/management" element={<ProfileManagement />} />
           <Route path="/profile/cv" element={<CVCreator />} />
