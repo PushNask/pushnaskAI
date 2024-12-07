@@ -16,8 +16,8 @@ const careerFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   currentRole: z.string().min(2, "Please specify your current role"),
   educationLevel: z.string().min(2, "Please select your education level"),
-  otherEducation: z.string().optional(),
   fieldOfStudy: z.string().min(2, "Please select your field of study"),
+  otherEducation: z.string().optional(),
   keySkills: z.string().max(500, "Maximum 500 characters allowed"),
   interests: z.string().max(500, "Maximum 500 characters allowed"),
   workExperience: z.string().min(2, "Please select your work experience"),
@@ -86,10 +86,28 @@ const CareerDevelopmentForm = () => {
 
   const form = useForm({
     resolver: zodResolver(careerFormSchema),
-    defaultValues: formData
+    defaultValues: formData || {
+      fullName: "",
+      email: "",
+      currentRole: "",
+      educationLevel: "",
+      fieldOfStudy: "",
+      otherEducation: "",
+      keySkills: "",
+      interests: "",
+      workExperience: "",
+      preferredIndustries: "",
+      workEnvironment: "",
+      willingToRelocate: "",
+      careerGoals: "",
+      shortTermGoals: "",
+      longTermVision: "",
+      additionalInfo: "",
+      interestedInTraining: ""
+    }
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: z.infer<typeof careerFormSchema>) => {
     setFormData(data);
     toast({
       title: "Success",
@@ -97,7 +115,7 @@ const CareerDevelopmentForm = () => {
     });
   };
 
-  const handleStepChange = (step) => {
+  const handleStepChange = (step: number) => {
     setFormData(form.getValues());
     setCurrentStep(step);
   };
@@ -109,7 +127,7 @@ const CareerDevelopmentForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-xl md:text-2xl font-semibold text-primary">
-            Service Configuration for Career Path & Professional Growth
+            Career Path & Professional Growth
           </h2>
           <p className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</p>
           <Progress value={progress} className="h-2" />
