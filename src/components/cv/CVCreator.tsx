@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -25,6 +26,7 @@ const LoadingState = ({ className = "" }: LoadingProps) => (
 );
 
 const CVCreator = () => {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [remainingFreePrints, setRemainingFreePrints] = useState(2);
@@ -61,6 +63,14 @@ const CVCreator = () => {
     }
   };
 
+  const handleBack = () => {
+    if (showEditor) {
+      setShowEditor(false);
+    } else {
+      navigate("/profile");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
@@ -71,8 +81,15 @@ const CVCreator = () => {
             <ErrorBoundary>
               <Card className="w-full">
                 <CardHeader>
-                  <CardTitle>CV Creator</CardTitle>
-                  <CardDescription>Create a professional CV tailored to your region</CardDescription>
+                  <div className="flex items-center gap-4">
+                    <Button variant="outline" onClick={handleBack} size="icon">
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                      <CardTitle>CV Creator</CardTitle>
+                      <CardDescription>Create a professional CV tailored to your region</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {isLoading ? (
@@ -85,24 +102,23 @@ const CVCreator = () => {
                       />
 
                       {selectedRegion && (
-                        <>
-                          <PrintControls 
-                            remainingFreePrints={remainingFreePrints}
-                            onPrint={handlePrint}
-                          />
-                          
-                          <Button 
-                            className="w-full mt-4 flex items-center justify-center gap-2"
-                            onClick={() => setShowEditor(true)}
-                          >
-                            Continue to CV Editor
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </>
+                        <Button 
+                          className="w-full mt-4 flex items-center justify-center gap-2"
+                          onClick={() => setShowEditor(true)}
+                        >
+                          Continue to CV Editor
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
                       )}
                     </>
                   ) : (
-                    <CVEditor selectedRegion={selectedRegion} />
+                    <>
+                      <CVEditor selectedRegion={selectedRegion} />
+                      <PrintControls 
+                        remainingFreePrints={remainingFreePrints}
+                        onPrint={handlePrint}
+                      />
+                    </>
                   )}
                 </CardContent>
               </Card>
