@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import AuthScreen from "./pages/AuthScreen";
 import AIAdvisor from "./pages/AIAdvisor";
@@ -23,19 +25,84 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/auth" element={<AuthScreen />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ai-advisor" element={<AIAdvisor />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/management" element={<ProfileManagement />} />
-          <Route path="/profile/cv" element={<CVCreator />} />
-          <Route path="/profile/services" element={<ServiceSetup />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/analytics" element={<Analytics />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthScreen />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai-advisor"
+              element={
+                <ProtectedRoute>
+                  <AIAdvisor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/management"
+              element={
+                <ProtectedRoute>
+                  <ProfileManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/cv"
+              element={
+                <ProtectedRoute>
+                  <CVCreator />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/services"
+              element={
+                <ProtectedRoute>
+                  <ServiceSetup />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
