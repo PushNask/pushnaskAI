@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { FormField } from "@/components/services/forms/components/FormField";
-import { TextAreaField } from "@/components/services/forms/components/TextAreaField";
-import { FormSection } from "@/components/services/forms/components/FormSection";
+import { FormField } from "../components/FormField";
+import { TextAreaField } from "../components/TextAreaField";
+import { FormSection } from "../components/FormSection";
 
 const entrepreneurialFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -70,7 +70,7 @@ const EntrepreneurialSupportForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-xl md:text-2xl font-semibold text-primary">
-            Service Configuration for Global Entrepreneurship & Funding
+            Global Entrepreneurship & Funding
           </h2>
           <p className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</p>
           <Progress value={progress} className="h-2" />

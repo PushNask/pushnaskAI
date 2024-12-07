@@ -103,7 +103,7 @@ const EducationalGuidanceForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-xl md:text-2xl font-semibold text-primary">
-            Service Configuration for Personalized Study & Academic Planning
+            Personalized Study & Academic Planning
           </h2>
           <p className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</p>
           <Progress value={progress} className="h-2" />
