@@ -80,7 +80,9 @@ const GlobalExplorationForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold">International Travel & Opportunities Explorer</h2>
+          <h2 className="text-xl md:text-2xl font-semibold text-primary">
+            Service Configuration for International Travel & Opportunities
+          </h2>
           <p className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</p>
           <Progress value={progress} className="h-2" />
         </div>
