@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { FormField } from "./components/FormField";
-import { TextAreaField } from "./components/TextAreaField";
-import { FormSection } from "./components/FormSection";
+import { FormField } from "../components/FormField";
+import { TextAreaField } from "../components/TextAreaField";
+import { FormSection } from "../components/FormSection";
 
 const globalExplorationSchema = z.object({
   primaryPurpose: z.string().min(2, "Please select your primary purpose"),
