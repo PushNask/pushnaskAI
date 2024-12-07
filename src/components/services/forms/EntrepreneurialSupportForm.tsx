@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -6,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { FormField } from "./components/FormField";
-import { TextAreaField } from "./components/TextAreaField";
-import { FormSection } from "./components/FormSection";
+import { FormField } from "@/components/services/forms/components/FormField";
+import { TextAreaField } from "@/components/services/forms/components/TextAreaField";
+import { FormSection } from "@/components/services/forms/components/FormSection";
 
 const entrepreneurialFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
