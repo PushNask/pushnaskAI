@@ -11,8 +11,10 @@ const formSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  cityState: z.string().min(2, "City and State must be at least 2 characters"),
   linkedin: z.string().url("Invalid LinkedIn URL").optional(),
   location: z.string().optional(),
+  professionalSummary: z.string().max(500, "Professional summary must be less than 500 characters").optional(),
   careerObjective: z.string().max(500, "Career objective must be less than 500 characters"),
   workExperience: z.string(),
   education: z.string(),
@@ -27,8 +29,10 @@ const NorthAmericaForm = ({ onSubmit, initialData }: BaseFormProps) => {
       fullName: "",
       email: "",
       phone: "",
+      cityState: "",
       linkedin: "",
       location: "",
+      professionalSummary: "",
       careerObjective: "",
       workExperience: "",
       education: "",
@@ -62,11 +66,25 @@ const NorthAmericaForm = ({ onSubmit, initialData }: BaseFormProps) => {
           />
           <FormField
             control={form.control}
+            name="cityState"
+            label="City and State"
+            placeholder="New York, NY"
+          />
+          <FormField
+            control={form.control}
             name="linkedin"
             label="LinkedIn Profile (Optional)"
             placeholder="https://linkedin.com/in/johndoe"
           />
         </div>
+
+        <TextAreaField
+          control={form.control}
+          name="professionalSummary"
+          label="Professional Summary (Optional)"
+          placeholder="Brief overview of your professional background and key strengths..."
+          rows={4}
+        />
 
         <TextAreaField
           control={form.control}
