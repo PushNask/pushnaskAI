@@ -1,9 +1,9 @@
 import { Control } from "react-hook-form";
-import { FormField } from "../components/FormField";
-import { TextAreaField } from "../components/TextAreaField";
-import { FormSection } from "../components/FormSection";
+import { FormField } from "../../components/FormField";
+import { TextAreaField } from "../../components/TextAreaField";
+import { FormSection } from "../../components/FormSection";
 import { EducationalGuidanceData } from "./types";
-import { budgetRanges } from "./constants";
+import { budgetRangeOptions } from "./constants";
 
 interface PreferencesStepProps {
   control: Control<EducationalGuidanceData>;
@@ -30,7 +30,7 @@ export const PreferencesStep = ({ control }: PreferencesStepProps) => {
           name="budgetRange"
           label="Budget Range"
           type="select"
-          options={budgetRanges}
+          options={budgetRangeOptions}
         />
         <TextAreaField
           control={control}

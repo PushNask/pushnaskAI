@@ -24,3 +24,8 @@ export const budgetRanges = [
   "$30,000 - $50,000",
   "Above $50,000"
 ] as const;
+
+// Create mutable versions of the arrays for use with FormField
+export const educationLevelOptions = [...educationLevels];
+export const studyFieldOptions = [...studyFields];
+export const budgetRangeOptions = [...budgetRanges];

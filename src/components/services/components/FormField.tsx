@@ -17,7 +17,7 @@ interface FormFieldProps {
   placeholder?: string;
   type?: string;
   tooltip?: string;
-  options?: string[];
+  options?: readonly string[] | string[];
 }
 
 export const FormField = ({ 

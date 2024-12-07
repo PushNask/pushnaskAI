@@ -1,9 +1,9 @@
 import { Control } from "react-hook-form";
-import { FormField } from "../components/FormField";
-import { TextAreaField } from "../components/TextAreaField";
-import { FormSection } from "../components/FormSection";
+import { FormField } from "../../components/FormField";
+import { TextAreaField } from "../../components/TextAreaField";
+import { FormSection } from "../../components/FormSection";
 import { EducationalGuidanceData } from "./types";
-import { educationLevels, studyFields } from "./constants";
+import { educationLevelOptions, studyFieldOptions } from "./constants";
 
 interface EducationDetailsStepProps {
   control: Control<EducationalGuidanceData>;
@@ -18,7 +18,7 @@ export const EducationDetailsStep = ({ control }: EducationDetailsStepProps) => 
           name="currentEducationLevel"
           label="Current Education Level"
           type="select"
-          options={educationLevels}
+          options={educationLevelOptions}
         />
         <TextAreaField
           control={control}
@@ -31,7 +31,7 @@ export const EducationDetailsStep = ({ control }: EducationDetailsStepProps) => 
           name="desiredFieldOfStudy"
           label="Desired Field of Study"
           type="select"
-          options={studyFields}
+          options={studyFieldOptions}
         />
         <TextAreaField
           control={control}
