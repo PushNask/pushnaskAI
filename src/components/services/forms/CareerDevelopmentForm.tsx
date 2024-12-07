@@ -40,6 +40,19 @@ const educationLevels = [
   "Other"
 ];
 
+const fieldsOfStudy = [
+  "Computer Science",
+  "Business Administration",
+  "Engineering",
+  "Medicine",
+  "Law",
+  "Arts",
+  "Social Sciences",
+  "Natural Sciences",
+  "Education",
+  "Other"
+];
+
 const workExperienceOptions = [
   "None",
   "0-1 years",
@@ -52,6 +65,19 @@ const workExperienceOptions = [
 const workEnvironments = ["Remote", "On-site", "Hybrid", "No Preference"];
 const yesNoMaybe = ["Yes", "No", "Maybe"];
 
+const preferredIndustries = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media",
+  "Government",
+  "Non-profit",
+  "Other"
+];
+
 const CareerDevelopmentForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useLocalStorage("careerFormData", {});
@@ -63,7 +89,7 @@ const CareerDevelopmentForm = () => {
     defaultValues: formData
   });
 
-  const onSubmit = (data: z.infer<typeof careerFormSchema>) => {
+  const onSubmit = (data) => {
     setFormData(data);
     toast({
       title: "Success",
@@ -71,7 +97,7 @@ const CareerDevelopmentForm = () => {
     });
   };
 
-  const handleStepChange = (step: number) => {
+  const handleStepChange = (step) => {
     setFormData(form.getValues());
     setCurrentStep(step);
   };
@@ -125,11 +151,18 @@ const CareerDevelopmentForm = () => {
                 type="select"
                 options={educationLevels}
               />
+              <FormField
+                control={form.control}
+                name="fieldOfStudy"
+                label="Field of Study"
+                type="select"
+                options={fieldsOfStudy}
+              />
               <TextAreaField
                 control={form.control}
                 name="otherEducation"
-                label="Other Education or Training"
-                placeholder="List any additional certifications, courses, or training..."
+                label="Other Certification or Training"
+                placeholder="List any additional certifications or training..."
               />
               <TextAreaField
                 control={form.control}
@@ -137,6 +170,13 @@ const CareerDevelopmentForm = () => {
                 label="Key Skills and Strengths"
                 placeholder="List both technical and soft skills..."
                 tooltip="Include both hard (technical) and soft (interpersonal) skills"
+              />
+              <TextAreaField
+                control={form.control}
+                name="interests"
+                label="Interests and Hobbies"
+                placeholder="Include interests relevant to career paths..."
+                tooltip="List interests that reflect personal passions or career aspirations"
               />
             </div>
           </FormSection>
@@ -151,6 +191,13 @@ const CareerDevelopmentForm = () => {
                 label="Work Experience"
                 type="select"
                 options={workExperienceOptions}
+              />
+              <FormField
+                control={form.control}
+                name="preferredIndustries"
+                label="Preferred Industries"
+                type="select"
+                options={preferredIndustries}
               />
               <FormField
                 control={form.control}
@@ -175,6 +222,13 @@ const CareerDevelopmentForm = () => {
             <div className="grid gap-4">
               <TextAreaField
                 control={form.control}
+                name="careerGoals"
+                label="Career Goals and Aspirations"
+                placeholder="Describe your career objectives and desired impact..."
+                tooltip="Include both short-term and long-term career objectives"
+              />
+              <TextAreaField
+                control={form.control}
                 name="shortTermGoals"
                 label="Short-Term Career Goals"
                 placeholder="What do you want to achieve in the next 1-2 years?"
@@ -186,6 +240,13 @@ const CareerDevelopmentForm = () => {
                 label="Long-Term Career Vision"
                 placeholder="Where do you see yourself in 5+ years?"
                 tooltip="Think about your ultimate career aspirations"
+              />
+              <TextAreaField
+                control={form.control}
+                name="additionalInfo"
+                label="Additional Information"
+                placeholder="Any other relevant information..."
+                tooltip="Include any other details that might be relevant"
               />
               <FormField
                 control={form.control}
