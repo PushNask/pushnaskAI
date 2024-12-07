@@ -1,5 +1,6 @@
 import { FormControl, FormField as Field, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from "react-hook-form";
 import { HelpCircle } from "lucide-react";
 import {
@@ -16,6 +17,7 @@ interface FormFieldProps {
   placeholder?: string;
   type?: string;
   tooltip?: string;
+  options?: string[];
 }
 
 export const FormField = ({ 
@@ -24,7 +26,8 @@ export const FormField = ({
   label, 
   placeholder, 
   type = "text",
-  tooltip 
+  tooltip,
+  options 
 }: FormFieldProps) => {
   return (
     <Field
@@ -48,11 +51,26 @@ export const FormField = ({
             )}
           </div>
           <FormControl>
-            <Input 
-              type={type} 
-              placeholder={placeholder} 
-              {...field}
-            />
+            {type === "select" && options ? (
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input 
+                type={type} 
+                placeholder={placeholder} 
+                {...field}
+              />
+            )}
           </FormControl>
           <FormMessage />
         </FormItem>
