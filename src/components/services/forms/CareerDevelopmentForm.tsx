@@ -82,7 +82,7 @@ const CareerDevelopmentForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold">Define your career path and objectives</h2>
+          <h2 className="text-2xl font-bold">Career Path & Professional Growth Profile</h2>
           <p className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</p>
           <Progress value={progress} className="h-2" />
         </div>
