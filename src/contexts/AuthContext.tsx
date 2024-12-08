@@ -33,8 +33,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         p_user_id: user?.id,
         p_event_type: eventType,
         p_resource_type: 'auth',
-        p_resource_id: user?.id,
-        p_details: details
+        p_resource_id: user?.id || null,
+        p_details: details,
+        p_metadata: {
+          timestamp: new Date().toISOString(),
+          session_id: session?.id
+        }
       });
 
       if (error) {
