@@ -6,16 +6,13 @@ export const useAuthMethods = () => {
   const navigate = useNavigate();
 
   const signIn = async (email: string, password: string) => {
-    try {
-      console.log('Attempting sign in for:', email);
-      
-      // First, validate inputs
-      if (!email || !password) {
-        toast.error('Please provide both email and password');
-        return;
-      }
+    console.log('Attempting sign in for:', email);
+    
+    if (!email || !password) {
+      throw new Error('Please provide both email and password');
+    }
 
-      // Attempt sign in
+    try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -27,31 +24,18 @@ export const useAuthMethods = () => {
         // Handle specific error cases
         switch (true) {
           case error.message.includes('Email not confirmed'):
-            toast.error('Please confirm your email address before signing in');
-            break;
+            throw new Error('Please confirm your email address before signing in');
           case error.message.includes('Invalid login credentials'):
-            toast.error('Invalid email or password');
-            break;
+            throw new Error('Invalid email or password');
           default:
-            toast.error(error.message);
+            throw error;
         }
-        return;
       }
 
       if (data.user) {
         console.log('Sign in successful for user:', data.user.id);
         
         try {
-          // Log successful sign in
-          await supabase.rpc('log_event', {
-            p_user_id: data.user.id,
-            p_event_type: 'sign_in_success',
-            p_resource_type: 'auth',
-            p_resource_id: data.user.id,
-            p_details: { method: 'email' },
-            p_metadata: { timestamp: new Date().toISOString() }
-          });
-
           // Check if user has a profile
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -61,8 +45,7 @@ export const useAuthMethods = () => {
 
           if (profileError) {
             console.error('Error fetching profile:', profileError);
-            toast.error('Error loading user profile');
-            return;
+            throw new Error('Error loading user profile');
           }
 
           console.log('Profile check result:', { hasProfile: !!profile });
@@ -77,12 +60,12 @@ export const useAuthMethods = () => {
           toast.success('Welcome back!');
         } catch (innerError) {
           console.error('Post-authentication error:', innerError);
-          toast.error('An error occurred after sign in');
+          throw new Error('An error occurred after sign in');
         }
       }
     } catch (error) {
       console.error('Sign in error:', error);
-      toast.error('An unexpected error occurred');
+      throw error;
     }
   };
 
