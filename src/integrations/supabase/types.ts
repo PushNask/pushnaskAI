@@ -19,7 +19,7 @@ export type Database = {
           recommendations: Json | null
           results: Json | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           analysis_type: string
@@ -30,7 +30,7 @@ export type Database = {
           recommendations?: Json | null
           results?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           analysis_type?: string
@@ -41,7 +41,7 @@ export type Database = {
           recommendations?: Json | null
           results?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -93,7 +93,7 @@ export type Database = {
           recommendations: Json | null
           results: Json | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           analysis_type: string
@@ -103,7 +103,7 @@ export type Database = {
           recommendations?: Json | null
           results?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           analysis_type?: string
@@ -113,7 +113,7 @@ export type Database = {
           recommendations?: Json | null
           results?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -170,7 +170,7 @@ export type Database = {
           preferences: Json | null
           service_type: Database["public"]["Enums"]["service_type"] | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -180,7 +180,7 @@ export type Database = {
           preferences?: Json | null
           service_type?: Database["public"]["Enums"]["service_type"] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -190,7 +190,7 @@ export type Database = {
           preferences?: Json | null
           service_type?: Database["public"]["Enums"]["service_type"] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -202,7 +202,7 @@ export type Database = {
           id: string
           parsed_data: Json | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           version: number | null
         }
         Insert: {
@@ -212,7 +212,7 @@ export type Database = {
           id?: string
           parsed_data?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           version?: number | null
         }
         Update: {
@@ -222,7 +222,7 @@ export type Database = {
           id?: string
           parsed_data?: Json | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           version?: number | null
         }
         Relationships: []
@@ -239,7 +239,7 @@ export type Database = {
           skills: string[] | null
           status: Database["public"]["Enums"]["user_status"] | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           career_goals?: Json | null
@@ -252,7 +252,7 @@ export type Database = {
           skills?: string[] | null
           status?: Database["public"]["Enums"]["user_status"] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           career_goals?: Json | null
@@ -265,7 +265,7 @@ export type Database = {
           skills?: string[] | null
           status?: Database["public"]["Enums"]["user_status"] | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }

@@ -1,34 +1,69 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { corsHeaders, rateLimiter, validateAuth, handleError } from "../utils/security.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Input validation schema
+const ChatRequestSchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(['user', 'assistant', 'system']),
+    content: z.string().min(1).max(4000)
+  })),
+  serviceType: z.enum(['career', 'global', 'education', 'business']),
+  userId: z.string().uuid()
+});
+
+// Rate limit configuration
+const RATE_LIMIT: { maxRequests: number; windowMs: number } = {
+  maxRequests: 20,
+  windowMs: 60000 // 1 minute
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { messages, serviceType, userId } = await req.json();
+    // Validate authentication
+    const userId = await validateAuth(req);
+    
+    // Check rate limit
+    if (rateLimiter.isRateLimited(userId, RATE_LIMIT)) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    // Parse and validate request body
+    const body = await req.json();
+    const validatedData = ChatRequestSchema.parse(body);
+
+    // Verify user is accessing their own data
+    if (validatedData.userId !== userId) {
+      throw new Error('Unauthorized access');
+    }
 
     // Get user profile for context
-    const { data: profile } = await supabaseClient
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { data: profile } = await supabase
       .from('user_profiles')
       .select('*')
       .eq('user_id', userId)
       .single();
 
     // Convert messages to Anthropic format
-    const anthropicMessages = messages.map((msg: any) => ({
+    const anthropicMessages = validatedData.messages.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'assistant',
       content: msg.content
     }));
 
     // Add system message based on service type and user profile
-    const systemMessage = generateSystemPrompt(serviceType, profile);
+    const systemMessage = generateSystemPrompt(validatedData.serviceType, profile);
     anthropicMessages.unshift({ role: 'system', content: systemMessage });
 
     console.log('Sending request to Anthropic:', { messages: anthropicMessages });
@@ -62,11 +97,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in chat function:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return handleError(error);
   }
 });
 
