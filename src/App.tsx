@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import Head from "./components/Head";
 import LandingPage from "./pages/LandingPage";
 import Overview from "./pages/Overview";
 import Pricing from "./pages/Pricing";
@@ -28,6 +29,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Head /> {/* Default meta tags will be used */}
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/overview" element={<Overview />} />
