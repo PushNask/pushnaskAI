@@ -1,30 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/auth/AuthContext';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const AuthScreen = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, session } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session) {
+      navigate('/ai-advisor');
+    }
+  }, [session, navigate]);
+
+  const validateForm = () => {
+    const errors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      errors.email = 'Email is required';
+    } else if (!EMAIL_REGEX.test(email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (!isLogin && !PASSWORD_REGEX.test(password)) {
+      errors.password = 'Password must be at least 8 characters and contain both letters and numbers';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isLogin) {
-        await signIn(email, password);
+        await signIn(email, password, rememberMe);
       } else {
         await signUp(email, password);
       }
@@ -33,6 +73,13 @@ const AuthScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setValidationErrors({});
+    navigate(`/auth?mode=${isLogin ? 'signup' : 'login'}`);
   };
 
   return (
@@ -73,11 +120,16 @@ const AuthScreen = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setValidationErrors({ ...validationErrors, email: undefined });
+                }}
                 placeholder="your@email.com"
-                required
-                className="w-full"
+                className={validationErrors.email ? 'border-red-500' : ''}
               />
+              {validationErrors.email && (
+                <p className="text-sm text-red-500">{validationErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -89,10 +141,12 @@ const AuthScreen = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setValidationErrors({ ...validationErrors, password: undefined });
+                  }}
                   placeholder="••••••••"
-                  required
-                  className="w-full pr-10"
+                  className={validationErrors.password ? 'border-red-500 pr-10' : 'pr-10'}
                 />
                 <button
                   type="button"
@@ -102,6 +156,9 @@ const AuthScreen = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              {validationErrors.password && (
+                <p className="text-sm text-red-500">{validationErrors.password}</p>
+              )}
             </div>
 
             {isLogin && (
@@ -110,6 +167,8 @@ const AuthScreen = () => {
                   <input
                     type="checkbox"
                     id="remember"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-300 text-blue-600"
                   />
                   <label htmlFor="remember" className="ml-2 text-sm text-slate-600">
@@ -145,7 +204,7 @@ const AuthScreen = () => {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={toggleMode}
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </Button>

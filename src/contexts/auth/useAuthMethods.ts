@@ -5,19 +5,32 @@ import { toast } from 'sonner';
 export const useAuthMethods = () => {
   const navigate = useNavigate();
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
       const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          // Set session duration to 30 days if rememberMe is true, otherwise 1 day
+          expiresIn: rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        let errorMessage = 'Failed to sign in.';
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please verify your email address before signing in.';
+        }
+        throw new Error(errorMessage);
+      }
 
       if (data.user) {
         await logAuthEvent('sign_in_success', {
           method: 'email',
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          rememberMe
         });
       }
 
@@ -29,7 +42,7 @@ export const useAuthMethods = () => {
         error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       });
-      toast.error('Failed to sign in. Please check your credentials.');
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in.');
       throw error;
     }
   };
@@ -44,7 +57,15 @@ export const useAuthMethods = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        let errorMessage = 'Failed to create account.';
+        if (error.message.includes('already registered')) {
+          errorMessage = 'This email is already registered. Please try signing in instead.';
+        } else if (error.message.includes('valid email')) {
+          errorMessage = 'Please enter a valid email address.';
+        }
+        throw new Error(errorMessage);
+      }
 
       if (data.user) {
         await logAuthEvent('sign_up_success', {
@@ -60,7 +81,7 @@ export const useAuthMethods = () => {
         error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       });
-      toast.error('Failed to create account. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Failed to create account.');
       throw error;
     }
   };
@@ -70,8 +91,10 @@ export const useAuthMethods = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      localStorage.removeItem('supabase.auth.session');
+      // Clear all auth-related items from localStorage
       localStorage.removeItem('supabase.auth.token');
+      localStorage.removeItem('supabase.auth.expires_at');
+      localStorage.removeItem('supabase.auth.refresh_token');
       
       await logAuthEvent('sign_out_success', {
         timestamp: new Date().toISOString()
