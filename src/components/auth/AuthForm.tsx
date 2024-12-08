@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslations } from '@/contexts/TranslationsContext';
 
 interface AuthFormProps {
   isLogin: boolean;
@@ -19,6 +20,8 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
     email?: string;
     password?: string;
   }>({});
+  
+  const { t } = useTranslations();
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -26,15 +29,15 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
     const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     if (!email) {
-      errors.email = 'Email is required';
+      errors.email = t('auth.emailRequired');
     } else if (!EMAIL_REGEX.test(email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = t('auth.invalidEmail');
     }
 
     if (!password) {
-      errors.password = 'Password is required';
+      errors.password = t('auth.passwordRequired');
     } else if (!isLogin && !PASSWORD_REGEX.test(password)) {
-      errors.password = 'Password must be at least 8 characters and contain both letters and numbers';
+      errors.password = t('auth.passwordRequirements');
     }
 
     setValidationErrors(errors);
@@ -50,14 +53,14 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="animate-in fade-in-50">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-2">
         <label htmlFor="email" className="text-sm font-medium text-slate-700">
-          Email
+          {t('auth.email')}
         </label>
         <Input
           id="email"
@@ -70,15 +73,18 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
           placeholder="your@email.com"
           className={validationErrors.email ? 'border-red-500' : ''}
           disabled={loading}
+          autoComplete="email"
         />
         {validationErrors.email && (
-          <p className="text-sm text-red-500">{validationErrors.email}</p>
+          <p className="text-sm text-red-500 animate-in fade-in-50">
+            {validationErrors.email}
+          </p>
         )}
       </div>
 
       <div className="space-y-2">
         <label htmlFor="password" className="text-sm font-medium text-slate-700">
-          Password
+          {t('auth.password')}
         </label>
         <div className="relative">
           <Input
@@ -90,19 +96,22 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
               setValidationErrors({ ...validationErrors, password: undefined });
             }}
             placeholder="••••••••"
-            className={validationErrors.password ? 'border-red-500 pr-10' : 'pr-10'}
+            className={`${validationErrors.password ? 'border-red-500' : ''} pr-10`}
             disabled={loading}
+            autoComplete={isLogin ? "current-password" : "new-password"}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full p-1"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
         {validationErrors.password && (
-          <p className="text-sm text-red-500">{validationErrors.password}</p>
+          <p className="text-sm text-red-500 animate-in fade-in-50">
+            {validationErrors.password}
+          </p>
         )}
       </div>
 
@@ -111,13 +120,14 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
         className="w-full bg-blue-600 hover:bg-blue-700"
         disabled={loading}
       >
-        {loading
-          ? isLogin
-            ? 'Signing in...'
-            : 'Creating account...'
-          : isLogin
-          ? 'Sign in'
-          : 'Create account'}
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {isLogin ? t('auth.signingIn') : t('auth.creatingAccount')}
+          </div>
+        ) : (
+          isLogin ? t('auth.signIn') : t('auth.createAccount')
+        )}
       </Button>
     </form>
   );
