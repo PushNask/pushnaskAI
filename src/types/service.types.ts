@@ -8,4 +8,4 @@ export interface AIService {
   credits: number;
 }
 
-export type ServiceCategory = "career" | "global" | "education" | "business";
+export type ServiceCategory = "career" | "global" | "education" | "entrepreneurial";

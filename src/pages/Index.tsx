@@ -7,6 +7,7 @@ import ChatInterface from "@/components/ChatInterface";
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
@@ -20,7 +21,10 @@ const Index = () => {
               <ServiceCards />
             </div>
             <div>
-              <ChatInterface />
+              <ChatInterface 
+                serviceType={selectedService || "career"} 
+                onReset={() => setSelectedService(null)} 
+              />
             </div>
           </div>
         </main>

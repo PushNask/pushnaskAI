@@ -34,7 +34,7 @@ const services = [
     credits: 4
   },
   {
-    id: "business",
+    id: "entrepreneurial",
     icon: Building,
     label: "Entrepreneurial Support",
     description: "Launch and grow your business ventures",
