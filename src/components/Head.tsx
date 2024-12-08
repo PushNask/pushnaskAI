@@ -110,7 +110,10 @@ const Head = ({
 
     // Cleanup function
     return () => {
-      if (scriptTag) document.head.removeChild(scriptTag);
+      const scriptToRemove = document.querySelector('script[type="application/ld+json"]');
+      if (scriptToRemove && scriptToRemove.parentNode) {
+        scriptToRemove.parentNode.removeChild(scriptToRemove);
+      }
     };
   }, [title, description, image, canonicalUrl]);
 
