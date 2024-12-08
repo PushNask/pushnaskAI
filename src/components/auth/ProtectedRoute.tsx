@@ -7,7 +7,10 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('ProtectedRoute - Session state:', { session, loading });
+    
     if (!loading && !session) {
+      console.log('No session found, redirecting to auth');
       navigate('/auth');
     }
   }, [session, loading, navigate]);

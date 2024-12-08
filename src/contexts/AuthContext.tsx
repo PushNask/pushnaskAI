@@ -22,33 +22,66 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get initial session
+    // Get initial session and set up subscription
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Set up auth state change subscription
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Persist session in localStorage
+      if (session) {
+        localStorage.setItem('supabase.auth.token', session.access_token);
+      } else {
+        localStorage.removeItem('supabase.auth.token');
+      }
     });
 
-    return () => subscription.unsubscribe();
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ 
-        email, 
-        password
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+
       if (error) throw error;
+
+      // Create or update user profile if it doesn't exist
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: data.user.id,
+            email: data.user.email,
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+
+        if (profileError) {
+          console.error('Error updating profile:', profileError);
+        }
+      }
+
       navigate('/ai-advisor');
       toast.success('Welcome back!');
     } catch (error) {
+      console.error('Sign in error:', error);
       toast.error('Failed to sign in. Please check your credentials.');
       throw error;
     }
@@ -56,16 +89,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({ 
-        email, 
+      const { error, data } = await supabase.auth.signUp({
+        email,
         password,
         options: {
-          emailRedirectTo: window.location.origin
-        }
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
+
       if (error) throw error;
+
+      // Create initial profile
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
+      }
+
       toast.success('Check your email to confirm your account!');
     } catch (error) {
+      console.error('Sign up error:', error);
       toast.error('Failed to create account. Please try again.');
       throw error;
     }
@@ -75,9 +129,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear any stored session data
+      localStorage.removeItem('supabase.auth.token');
       navigate('/auth');
       toast.success('Successfully signed out');
     } catch (error) {
+      console.error('Sign out error:', error);
       toast.error('Failed to sign out');
       throw error;
     }
