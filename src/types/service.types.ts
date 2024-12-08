@@ -1,10 +1,8 @@
-import { LucideIcon } from "lucide-react";
-
-export interface AIService {
+export interface Service {
   id: string;
-  icon: LucideIcon;
   label: string;
   description: string;
+  icon: any;
   credits: number;
 }
 
