@@ -13,7 +13,7 @@ export const useAuthMethods = () => {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -25,24 +25,21 @@ export const useAuthMethods = () => {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please try again.');
         } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please confirm your email address before signing in');
+          throw new Error('Please confirm your email address before signing in.');
         } else {
           throw error;
         }
       }
 
-      // Get user session after successful sign in
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        console.log('Sign in successful for user:', session.user.id);
+      if (data.user) {
+        console.log('Sign in successful for user:', data.user.id);
         
         try {
           // Check if user has a profile
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('id', data.user.id)
             .single();
 
           if (profileError) {
