@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import Head from "@/components/Head";
+import { useNavigate } from "react-router-dom";
 
 const services = [
   {
@@ -50,12 +51,28 @@ const AIAdvisor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const user = useUser();
+  const navigate = useNavigate();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
 
   const handleServiceSelect = async (serviceId: ServiceType) => {
+    if (!user?.id) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use this service.",
+        variant: "destructive"
+      });
+      navigate('/auth');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      if (!user?.id) throw new Error('User not authenticated');
-
       // Save service selection to user's service config
       const { error } = await supabase
         .from('service_configs')
@@ -84,7 +101,6 @@ const AIAdvisor = () => {
     }
   };
 
-  // Memoize service buttons to prevent unnecessary re-renders
   const serviceButtons = useMemo(() => services.map((service) => {
     const ServiceIcon = service.icon;
     return (

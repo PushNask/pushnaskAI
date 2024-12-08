@@ -1,21 +1,62 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface AnalysisRequest {
-  type: 'cv' | 'career' | 'education';
-  content: string;
-  userId: string;
-  metadata?: Record<string, unknown>;
+// Input validation schemas
+const AnalysisRequestSchema = z.object({
+  userId: z.string().uuid(),
+  serviceType: z.enum(['career', 'global', 'education', 'business']),
+  content: z.string().min(1),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+// Rate limiting implementation
+const rateLimiter = new Map<string, number>();
+const RATE_LIMIT = 10; // requests per minute
+const RATE_WINDOW = 60000; // 1 minute in milliseconds
+
+function isRateLimited(userId: string): boolean {
+  const now = Date.now();
+  const userRequests = rateLimiter.get(userId) || 0;
+  
+  if (userRequests >= RATE_LIMIT) {
+    return true;
+  }
+  
+  rateLimiter.set(userId, userRequests + 1);
+  setTimeout(() => rateLimiter.set(userId, (rateLimiter.get(userId) || 1) - 1), RATE_WINDOW);
+  
+  return false;
+}
+
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const delay = Math.min(1000 * Math.pow(2, i), 10000);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError;
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
+  console.log('Received request:', req.method);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -26,121 +67,117 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { type, content, userId, metadata } = await req.json() as AnalysisRequest;
+    // Parse and validate request
+    const requestData = await req.json();
+    const validatedData = AnalysisRequestSchema.parse(requestData);
+    
+    // Check rate limit
+    if (isRateLimited(validatedData.userId)) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
 
-    // Get the appropriate prompt based on analysis type
+    // Get appropriate prompt
     const { data: promptData, error: promptError } = await supabase
       .from('ai_prompts')
       .select('prompt_text')
-      .eq('service_type', type)
+      .eq('service_type', validatedData.serviceType)
       .eq('is_active', true)
       .single();
 
     if (promptError || !promptData) {
-      throw new Error('Failed to fetch prompt');
+      throw new Error('Failed to fetch appropriate prompt');
     }
 
-    // Call OpenAI API for analysis
-    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: promptData.prompt_text,
-          },
-          {
-            role: 'user',
-            content,
-          },
-        ],
-      }),
+    // Call OpenAI with retry logic
+    const openaiResponse = await retryWithBackoff(async () => {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: promptData.prompt_text,
+            },
+            {
+              role: 'user',
+              content: validatedData.content,
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.statusText}`);
+      }
+
+      return response.json();
     });
 
-    if (!openaiResponse.ok) {
-      throw new Error('OpenAI API request failed');
-    }
+    const initialAnalysis = openaiResponse.choices[0].message.content;
 
-    const aiResult = await openaiResponse.json();
-    const analysisContent = aiResult.choices[0].message.content;
+    // Get enhanced insights from Anthropic
+    const anthropicResponse = await retryWithBackoff(async () => {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': Deno.env.get('ANTHROPIC_API_KEY') || '',
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-3-sonnet-20240229',
+          messages: [
+            {
+              role: 'user',
+              content: `Based on this analysis: ${initialAnalysis}, provide additional insights and recommendations.`
+            }
+          ],
+          max_tokens: 1024,
+        }),
+      });
 
-    // Parse the AI response
-    let results;
-    let recommendations;
-    try {
-      const parsed = JSON.parse(analysisContent);
-      results = parsed.results || parsed;
-      recommendations = parsed.recommendations || [];
-    } catch (e) {
-      results = { content: analysisContent };
-      recommendations = [];
-    }
+      if (!response.ok) {
+        throw new Error(`Anthropic API error: ${response.statusText}`);
+      }
+
+      return response.json();
+    });
 
     // Store analysis results
-    const { data: analysisData, error: analysisError } = await supabase
+    const { error: insertError } = await supabase
       .from('ai_analysis_results')
       .insert({
-        user_id: userId,
-        analysis_type: type,
-        content,
-        results,
-        recommendations,
-        metadata,
-      })
-      .select()
-      .single();
+        user_id: validatedData.userId,
+        analysis_type: validatedData.serviceType,
+        content: validatedData.content,
+        results: {
+          initial_analysis: initialAnalysis,
+          enhanced_insights: anthropicResponse.content[0].text
+        },
+        metadata: {
+          ...validatedData.metadata,
+          timestamp: new Date().toISOString(),
+          service_type: validatedData.serviceType
+        }
+      });
 
-    if (analysisError) {
-      throw analysisError;
+    if (insertError) {
+      throw new Error(`Failed to store analysis results: ${insertError.message}`);
     }
 
-    // Get additional context from Anthropic for enhanced recommendations
-    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY') || '',
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
-        messages: [
-          {
-            role: 'user',
-            content: `Based on this analysis: ${JSON.stringify(results)}, provide additional career development insights and recommendations.`
-          }
-        ],
-        max_tokens: 1024,
-      }),
-    });
-
-    if (!anthropicResponse.ok) {
-      console.error('Anthropic API request failed, continuing with OpenAI results only');
-    } else {
-      const anthropicData = await anthropicResponse.json();
-      const enhancedRecommendations = anthropicData.content[0].text;
-
-      // Update the analysis with enhanced recommendations
-      await supabase
-        .from('ai_analysis_results')
-        .update({
-          metadata: {
-            ...metadata,
-            enhanced_recommendations: enhancedRecommendations
-          }
-        })
-        .eq('id', analysisData.id);
-    }
-
+    // Return combined analysis
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        data: analysisData 
+      JSON.stringify({
+        success: true,
+        analysis: {
+          initial: initialAnalysis,
+          enhanced: anthropicResponse.content[0].text
+        }
       }),
       { 
         headers: { 
@@ -152,12 +189,18 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in ai-advisor function:', error);
+    
+    const statusCode = error instanceof z.ZodError ? 400 : 500;
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message 
+        success: false, 
+        error: errorMessage,
+        details: error instanceof z.ZodError ? error.errors : undefined
       }),
       { 
-        status: 500,
+        status: statusCode,
         headers: { 
           ...corsHeaders, 
           'Content-Type': 'application/json' 
