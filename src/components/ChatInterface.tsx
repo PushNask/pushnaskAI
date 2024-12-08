@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Send, Paperclip, Globe, Loader2 } from "lucide-react";
@@ -6,6 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 import { AppError, handleError } from "@/utils/errorHandling";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "./ui/skeleton";
+import { useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { AdvisoryContext, UserProfileCheck, generateInitialPrompt } from "@/types/career";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,6 +20,55 @@ const ChatInterface = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const user = useUser();
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      if (!user) return;
+
+      try {
+        setIsLoading(true);
+
+        // Fetch user profile data
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        // Check profile completeness
+        const profileCheck: UserProfileCheck = {
+          personalInfo: Boolean(profile?.full_name),
+          cvCreated: true, // This should be checked against CV storage
+          servicePreferences: true, // This should be checked against service preferences
+        };
+
+        // Prepare advisory context
+        const context: AdvisoryContext = {
+          userName: profile?.full_name || user.email?.split('@')[0] || 'there',
+          currentRole: profile?.current_role || undefined,
+          fieldOfStudy: profile?.field_of_study || undefined,
+          preferredIndustries: profile?.preferred_industries || [],
+        };
+
+        // Generate and set initial message
+        const initialPrompt = generateInitialPrompt(context, profileCheck);
+        setMessages([{ role: 'assistant', content: initialPrompt }]);
+
+      } catch (error) {
+        const errorDetails = handleError(error);
+        toast({
+          title: "Error",
+          description: errorDetails.message,
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeChat();
+  }, [user, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,13 +87,9 @@ const ChatInterface = () => {
       // Simulate AI response
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (Math.random() > 0.9) { // Simulate occasional errors
-        throw new AppError("Failed to get AI response", "AI_ERROR", 500);
-      }
-
       const aiResponse: Message = {
         role: 'assistant',
-        content: 'Thank you for your message. I am analyzing your request and will provide personalized recommendations shortly.'
+        content: 'Thank you for sharing that. I understand your career goals better now. Let me analyze your situation and provide personalized recommendations.'
       };
       
       setMessages(prev => [...prev, aiResponse]);
