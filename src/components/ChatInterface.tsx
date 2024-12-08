@@ -52,7 +52,7 @@ const ChatInterface = () => {
         };
 
         // Generate and set initial message
-        const initialPrompt = generateInitialPrompt(context, profileCheck);
+        const initialPrompt = generateInitialPrompt("Career Development", context, profileCheck);
         setMessages([{ role: 'assistant', content: initialPrompt }]);
 
       } catch (error) {
