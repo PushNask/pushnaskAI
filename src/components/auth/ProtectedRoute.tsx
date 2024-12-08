@@ -1,25 +1,33 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
+  const { session, loading, profile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    console.log('ProtectedRoute - Session state:', { 
+    console.log('ProtectedRoute - Auth state:', { 
       session: session?.user?.id,
       loading,
-      hasLocalSession: Boolean(localStorage.getItem('supabase.auth.session'))
+      hasProfile: Boolean(profile),
+      path: location.pathname
     });
     
-    // Only redirect if we're not loading and there's no session
-    if (!loading && !session) {
-      console.log('No session found, redirecting to auth');
-      navigate('/auth');
+    if (!loading) {
+      if (!session) {
+        // No session, redirect to auth
+        console.log('No session found, redirecting to auth');
+        navigate('/auth');
+      } else if (!profile && location.pathname !== '/profile/setup') {
+        // Has session but no profile, redirect to profile setup
+        console.log('No profile found, redirecting to profile setup');
+        navigate('/profile/setup');
+      }
     }
-  }, [session, loading, navigate]);
+  }, [session, loading, profile, navigate, location.pathname]);
 
   // Show loading state
   if (loading) {
@@ -30,6 +38,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  // Only render children if we have a session
-  return session ? <>{children}</> : null;
+  // Only render children if we have both session and profile
+  return session && profile ? <>{children}</> : null;
 }

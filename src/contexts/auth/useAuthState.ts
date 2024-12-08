@@ -6,33 +6,69 @@ export const useAuthState = (): AuthState => {
   const [state, setState] = useState<AuthState>({
     session: null,
     user: null,
-    loading: true
+    loading: true,
+    profile: null
   });
 
   useEffect(() => {
     console.log('Setting up auth state listener');
     
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session?.user?.id);
-      setState(prev => ({
-        ...prev,
-        session,
-        user: session?.user ?? null,
-        loading: false
-      }));
-    });
+    // Get initial session and profile
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        setState(prev => ({
+          ...prev,
+          session,
+          user: session.user,
+          profile,
+          loading: false
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          loading: false
+        }));
+      }
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         console.log('Auth state changed:', session?.user?.id);
-        setState(prev => ({
-          ...prev,
-          session,
-          user: session?.user ?? null,
-          loading: false
-        }));
+        
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          setState(prev => ({
+            ...prev,
+            session,
+            user: session.user,
+            profile,
+            loading: false
+          }));
+        } else {
+          setState(prev => ({
+            ...prev,
+            session: null,
+            user: null,
+            profile: null,
+            loading: false
+          }));
+        }
       }
     );
 

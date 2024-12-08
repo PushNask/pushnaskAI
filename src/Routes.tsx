@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
 import ProfileManagement from "./pages/profile/ProfileManagement";
+import ProfileSetup from "./pages/profile/ProfileSetup";
 import CVCreator from "./components/cv/CVCreator";
 import ServiceSetup from "./components/profile/ServiceSetup";
 
@@ -20,6 +21,14 @@ const Routes = () => (
     <Route path="/overview" element={<Overview />} />
     <Route path="/pricing" element={<Pricing />} />
     <Route path="/auth" element={<AuthScreen />} />
+    <Route
+      path="/profile/setup"
+      element={
+        <ProtectedRoute>
+          <ProfileSetup />
+        </ProtectedRoute>
+      }
+    />
     <Route
       path="/dashboard"
       element={
