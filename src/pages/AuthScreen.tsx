@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { AuthForm } from '@/components/auth/AuthForm';
 
@@ -13,7 +13,13 @@ const AuthScreen = () => {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn, signUp, session } = useAuth();
+
+  // Update isLogin state when searchParams change
+  useEffect(() => {
+    setIsLogin(searchParams.get('mode') !== 'signup');
+  }, [searchParams]);
 
   // Only redirect if we have a session and we're not in the middle of authentication
   if (session && !loading) {
@@ -38,6 +44,12 @@ const AuthScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    const newMode = isLogin ? 'signup' : 'login';
+    navigate(`/auth?mode=${newMode}`, { replace: true });
+    setIsLogin(!isLogin);
   };
 
   return (
@@ -79,10 +91,7 @@ const AuthScreen = () => {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => {
-              setIsLogin(!isLogin);
-              navigate(`/auth?mode=${isLogin ? 'signup' : 'login'}`);
-            }}
+            onClick={toggleMode}
             disabled={loading}
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
