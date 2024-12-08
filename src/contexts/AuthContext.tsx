@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate('/dashboard');
+      navigate('/ai-advisor');
       toast.success('Welcome back!');
     } catch (error) {
       toast.error('Failed to sign in. Please check your credentials.');
