@@ -9,8 +9,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const state = useAuthState();
   const methods = useAuthMethods();
 
+  const value = {
+    ...state,
+    ...methods
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, ...methods }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

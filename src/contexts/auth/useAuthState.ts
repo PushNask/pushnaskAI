@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthState } from './types';
-import { toast } from 'sonner';
 
-export const useAuthState = () => {
+export const useAuthState = (): AuthState => {
   const [state, setState] = useState<AuthState>({
     session: null,
     user: null,
@@ -12,39 +11,25 @@ export const useAuthState = () => {
   });
 
   useEffect(() => {
-    // Initialize auth state from local storage
-    const savedSession = localStorage.getItem('supabase.auth.session');
-    if (savedSession) {
-      const parsedSession = JSON.parse(savedSession);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setState(prev => ({
         ...prev,
-        session: parsedSession,
-        user: parsedSession?.user || null
+        session,
+        user: session?.user ?? null,
+        loading: false
       }));
-    }
+    });
 
-    // Subscribe to auth changes
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        console.log('Auth state changed:', event, currentSession?.user?.id);
-        
+      async (_event, session) => {
         setState(prev => ({
           ...prev,
-          session: currentSession,
-          user: currentSession?.user ?? null,
+          session,
+          user: session?.user ?? null,
           loading: false
         }));
-
-        if (currentSession) {
-          localStorage.setItem('supabase.auth.session', JSON.stringify(currentSession));
-          
-          if (currentSession.user) {
-            await updateUserProfile(currentSession.user);
-          }
-        } else {
-          localStorage.removeItem('supabase.auth.session');
-          localStorage.removeItem('supabase.auth.token');
-        }
       }
     );
 
@@ -55,20 +40,3 @@ export const useAuthState = () => {
 
   return state;
 };
-
-async function updateUserProfile(user: User) {
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .upsert({
-      id: user.id,
-      email: user.email,
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'id'
-    });
-
-  if (profileError) {
-    console.error('Error updating profile:', profileError);
-    toast.error('Failed to update profile');
-  }
-}

@@ -23,15 +23,16 @@ const AuthScreen = () => {
     email?: string;
     password?: string;
   }>({});
+  
   const navigate = useNavigate();
   const { signIn, signUp, session } = useAuth();
 
-  // Redirect if already logged in
+  // Only redirect if we have a session and we're not in the middle of authentication
   useEffect(() => {
-    if (session) {
+    if (session && !loading) {
       navigate('/ai-advisor');
     }
-  }, [session, navigate]);
+  }, [session, navigate, loading]);
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -126,6 +127,7 @@ const AuthScreen = () => {
                 }}
                 placeholder="your@email.com"
                 className={validationErrors.email ? 'border-red-500' : ''}
+                disabled={loading}
               />
               {validationErrors.email && (
                 <p className="text-sm text-red-500">{validationErrors.email}</p>
@@ -147,6 +149,7 @@ const AuthScreen = () => {
                   }}
                   placeholder="••••••••"
                   className={validationErrors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -170,6 +173,7 @@ const AuthScreen = () => {
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-300 text-blue-600"
+                    disabled={loading}
                   />
                   <label htmlFor="remember" className="ml-2 text-sm text-slate-600">
                     Remember me
@@ -205,6 +209,7 @@ const AuthScreen = () => {
             variant="outline"
             className="w-full"
             onClick={toggleMode}
+            disabled={loading}
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </Button>
