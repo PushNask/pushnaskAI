@@ -102,11 +102,12 @@ async function logAuthEvent(
   details: Record<string, any> = {}
 ) {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.rpc('log_event', {
-      p_user_id: supabase.auth.getUser()?.data?.user?.id,
+      p_user_id: user?.id,
       p_event_type: eventType,
       p_resource_type: 'auth',
-      p_resource_id: supabase.auth.getUser()?.data?.user?.id,
+      p_resource_id: user?.id,
       p_details: details
     });
 
