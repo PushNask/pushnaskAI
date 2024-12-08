@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { GraduationCap, Globe, Building, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@supabase/auth-helpers-react";
