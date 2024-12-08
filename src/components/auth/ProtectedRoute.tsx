@@ -7,7 +7,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('ProtectedRoute - Session state:', { session, loading });
+    console.log('ProtectedRoute - Session state:', { 
+      session: session?.user?.id,
+      loading,
+      hasLocalSession: Boolean(localStorage.getItem('supabase.auth.session'))
+    });
     
     if (!loading && !session) {
       console.log('No session found, redirecting to auth');

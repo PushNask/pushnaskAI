@@ -16,33 +16,65 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<Session | null>(() => {
+    // Initialize from localStorage if available
+    const savedSession = localStorage.getItem('supabase.auth.session');
+    return savedSession ? JSON.parse(savedSession) : null;
+  });
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session and set up subscription
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (initialSession) {
+          setSession(initialSession);
+          setUser(initialSession.user);
+          // Store session in localStorage
+          localStorage.setItem('supabase.auth.session', JSON.stringify(initialSession));
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     // Set up auth state change subscription
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.id);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      console.log('Auth state changed:', event, currentSession?.user?.id);
+      
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      
+      if (currentSession) {
+        // Store session in localStorage
+        localStorage.setItem('supabase.auth.session', JSON.stringify(currentSession));
+        
+        // Ensure profile exists
+        if (currentSession.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: currentSession.user.id,
+              email: currentSession.user.email,
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'id'
+            });
 
-      // Persist session in localStorage
-      if (session) {
-        localStorage.setItem('supabase.auth.token', session.access_token);
+          if (profileError) {
+            console.error('Error updating profile:', profileError);
+          }
+        }
       } else {
-        localStorage.removeItem('supabase.auth.token');
+        // Clear session from localStorage
+        localStorage.removeItem('supabase.auth.session');
       }
     });
 
@@ -61,14 +93,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
 
-      // Create or update user profile if it doesn't exist
+      // Create or update user profile
       if (data.user) {
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: data.user.id,
             email: data.user.email,
-            updated_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'id'
           })
           .select()
           .single();
@@ -130,8 +164,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear any stored session data
+      // Clear all auth-related data from localStorage
+      localStorage.removeItem('supabase.auth.session');
       localStorage.removeItem('supabase.auth.token');
+      
+      setSession(null);
+      setUser(null);
       navigate('/auth');
       toast.success('Successfully signed out');
     } catch (error) {
