@@ -5,6 +5,14 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 const DashboardHeader = () => {
   const { signOut } = useAuth();
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex items-center gap-2">
@@ -21,7 +29,7 @@ const DashboardHeader = () => {
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5 text-gray-600" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => signOut()}>
+        <Button variant="ghost" size="icon" onClick={handleSignOut}>
           <LogOut className="h-5 w-5 text-gray-600" />
         </Button>
       </div>
