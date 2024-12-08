@@ -7,12 +7,11 @@ import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import ChatInterface from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
-import { AIService } from "@/types/service.types";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import Head from "@/components/Head";
 
-const services: AIService[] = [
+const services = [
   {
     id: "career",
     icon: GraduationCap,
@@ -35,36 +34,33 @@ const services: AIService[] = [
     credits: 4
   },
   {
-    id: "cv",
-    icon: FileText,
-    label: "CV Analysis",
-    description: "Get professional feedback on your CV",
-    credits: 4
-  },
-  {
     id: "business",
     icon: Building,
     label: "Entrepreneurial Support",
     description: "Launch and grow your business ventures",
     credits: 4
   }
-];
+] as const;
+
+type ServiceType = typeof services[number]['id'];
 
 const AIAdvisor = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [selectedService, setSelectedService] = useState<AIService["id"] | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const user = useUser();
 
-  const handleServiceSelect = async (serviceId: string) => {
+  const handleServiceSelect = async (serviceId: ServiceType) => {
     setIsLoading(true);
     try {
+      if (!user?.id) throw new Error('User not authenticated');
+
       // Save service selection to user's service config
       const { error } = await supabase
         .from('service_configs')
         .upsert({
-          user_id: user?.id,
+          user_id: user.id,
           service_type: serviceId,
           last_used: new Date().toISOString()
         });
@@ -155,7 +151,10 @@ const AIAdvisor = () => {
                 <Skeleton className="h-[400px] w-full" />
               </Card>
             ) : (
-              <ChatInterface serviceType={selectedService} onReset={() => setSelectedService(null)} />
+              <ChatInterface 
+                serviceType={selectedService} 
+                onReset={() => setSelectedService(null)} 
+              />
             )}
           </main>
         </div>

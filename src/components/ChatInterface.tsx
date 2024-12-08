@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import ChatContainer from "./chat/ChatContainer";
+import MessageList from "./MessageList";
+import ChatInputBar from "./chat/ChatInputBar";
 import { Message } from "@/types/chat";
 
 interface ChatInterfaceProps {
@@ -26,14 +27,14 @@ const ChatInterface = ({ serviceType, onReset }: ChatInterfaceProps) => {
       try {
         setIsLoading(true);
 
-        // Fetch user profile and preferences
+        // Fetch user profile
         const { data: profile } = await supabase
           .from('user_profiles')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
-        // Generate initial message based on service type and user profile
+        // Generate initial message based on service type and profile
         const initialMessage = generateInitialMessage(serviceType, profile);
         setMessages([{ role: 'assistant', content: initialMessage }]);
 
@@ -50,10 +51,10 @@ const ChatInterface = ({ serviceType, onReset }: ChatInterfaceProps) => {
     };
 
     initializeChat();
-  }, [user, serviceType]);
+  }, [user, serviceType, toast]);
 
   const sendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return;
+    if (!content.trim() || isLoading || !user) return;
 
     const newMessage: Message = { role: 'user', content };
     setMessages(prev => [...prev, newMessage]);
@@ -65,7 +66,7 @@ const ChatInterface = ({ serviceType, onReset }: ChatInterfaceProps) => {
         body: { 
           messages: [...messages, newMessage],
           serviceType,
-          userId: user?.id
+          userId: user.id
         }
       });
 
@@ -96,11 +97,10 @@ const ChatInterface = ({ serviceType, onReset }: ChatInterfaceProps) => {
       </div>
 
       <Card className="p-0">
-        <ChatContainer
-          messages={messages}
-          isLoading={isLoading}
-          onSendMessage={sendMessage}
-        />
+        <div className="h-[calc(100vh-12rem)] flex flex-col">
+          <MessageList messages={messages} />
+          <ChatInputBar onSendMessage={sendMessage} isLoading={isLoading} />
+        </div>
       </Card>
     </div>
   );
@@ -111,7 +111,6 @@ const getServiceTitle = (serviceType: string): string => {
     career: "Career Development Advisor",
     global: "Global Opportunities Explorer",
     education: "Educational Guidance Counselor",
-    cv: "CV Analysis Expert",
     business: "Entrepreneurial Advisor"
   };
   return titles[serviceType] || "AI Advisor";
@@ -124,7 +123,6 @@ const generateInitialMessage = (serviceType: string, profile: any): string => {
     career: `Hello ${userName}! I'm your Career Development Advisor. I can help you explore career paths, develop professional skills, and achieve your career goals. What would you like to discuss today?`,
     global: `Welcome ${userName}! I'm here to help you discover global opportunities. Whether you're interested in working abroad, international education, or global business ventures, I can guide you through the process.`,
     education: `Hi ${userName}! I'm your Educational Guidance Counselor. I can help you find the right educational path, from choosing programs to preparing applications. What are your educational goals?`,
-    cv: `Hello ${userName}! I'm your CV Analysis Expert. I can help you improve your CV and make it stand out to potential employers. Would you like me to analyze your current CV or help you create a new one?`,
     business: `Welcome ${userName}! I'm your Entrepreneurial Advisor. I can help you with business planning, funding strategies, and growth opportunities. What aspect of your business would you like to discuss?`
   };
 
