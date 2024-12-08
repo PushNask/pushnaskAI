@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cv_analysis_results: {
+        Row: {
+          analysis_type: string
+          created_at: string | null
+          cv_id: string | null
+          id: string
+          recommendations: Json | null
+          results: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analysis_type: string
+          created_at?: string | null
+          cv_id?: string | null
+          id?: string
+          recommendations?: Json | null
+          results?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analysis_type?: string
+          created_at?: string | null
+          cv_id?: string | null
+          id?: string
+          recommendations?: Json | null
+          results?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_analysis_results_cv_id_fkey"
+            columns: ["cv_id"]
+            isOneToOne: false
+            referencedRelation: "user_cvs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -113,28 +154,40 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          career_goals: Json | null
           created_at: string | null
+          education_history: Json | null
           id: string
+          interests: string[] | null
           job_role: string | null
           metadata: Json | null
+          skills: string[] | null
           status: Database["public"]["Enums"]["user_status"] | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          career_goals?: Json | null
           created_at?: string | null
+          education_history?: Json | null
           id?: string
+          interests?: string[] | null
           job_role?: string | null
           metadata?: Json | null
+          skills?: string[] | null
           status?: Database["public"]["Enums"]["user_status"] | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          career_goals?: Json | null
           created_at?: string | null
+          education_history?: Json | null
           id?: string
+          interests?: string[] | null
           job_role?: string | null
           metadata?: Json | null
+          skills?: string[] | null
           status?: Database["public"]["Enums"]["user_status"] | null
           updated_at?: string | null
           user_id?: string | null

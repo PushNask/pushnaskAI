@@ -27,15 +27,29 @@ const ChatInterface = ({ serviceType, onReset }: ChatInterfaceProps) => {
       try {
         setIsLoading(true);
 
-        // Fetch user profile
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+        // Fetch user profile and CV data
+        const [profileResponse, cvResponse] = await Promise.all([
+          supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .single(),
+          supabase
+            .from('user_cvs')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+        ]);
 
-        // Generate initial message based on service type and profile
-        const initialMessage = generateInitialMessage(serviceType, profile);
+        // Generate initial message based on service type, profile, and CV
+        const initialMessage = generateInitialMessage(
+          serviceType, 
+          profileResponse.data,
+          cvResponse.data
+        );
+        
         setMessages([{ role: 'assistant', content: initialMessage }]);
 
       } catch (error) {
@@ -116,14 +130,38 @@ const getServiceTitle = (serviceType: string): string => {
   return titles[serviceType] || "AI Advisor";
 };
 
-const generateInitialMessage = (serviceType: string, profile: any): string => {
+const generateInitialMessage = (
+  serviceType: string, 
+  profile: any, 
+  cv: any
+): string => {
   const userName = profile?.full_name || "there";
+  const hasCV = Boolean(cv);
+  const skills = profile?.skills || [];
+  const interests = profile?.interests || [];
+  const careerGoals = profile?.career_goals || [];
 
   const messages: Record<string, string> = {
-    career: `Hello ${userName}! I'm your Career Development Advisor. I can help you explore career paths, develop professional skills, and achieve your career goals. What would you like to discuss today?`,
-    global: `Welcome ${userName}! I'm here to help you discover global opportunities. Whether you're interested in working abroad, international education, or global business ventures, I can guide you through the process.`,
-    education: `Hi ${userName}! I'm your Educational Guidance Counselor. I can help you find the right educational path, from choosing programs to preparing applications. What are your educational goals?`,
-    business: `Welcome ${userName}! I'm your Entrepreneurial Advisor. I can help you with business planning, funding strategies, and growth opportunities. What aspect of your business would you like to discuss?`
+    career: `Hello ${userName}! I'm your Career Development Advisor. 
+${hasCV ? "I've reviewed your CV and can provide personalized guidance based on your experience." : "I notice you haven't uploaded a CV yet. Would you like help creating one?"}
+${skills.length ? `\nYour current skills include: ${skills.join(", ")}` : ""}
+${careerGoals.length ? `\nBased on your career goals, I can help you develop a plan to achieve them.` : ""}
+How would you like to proceed with your career development journey?`,
+
+    global: `Welcome ${userName}! I'm here to help you discover global opportunities.
+${hasCV ? "Based on your CV, I can suggest international positions that match your experience." : ""}
+${interests.length ? `\nI see you're interested in: ${interests.join(", ")}` : ""}
+Would you like to explore international opportunities in any specific regions?`,
+
+    education: `Hi ${userName}! I'm your Educational Guidance Counselor.
+${profile?.education_history ? "I've reviewed your educational background and can suggest relevant programs." : "Let's start by discussing your educational background."}
+${interests.length ? `\nGiven your interests in ${interests.join(", ")}, I can recommend suitable educational paths.` : ""}
+What aspect of your educational journey would you like to discuss?`,
+
+    business: `Welcome ${userName}! I'm your Entrepreneurial Advisor.
+${hasCV ? "I've analyzed your professional background and can provide targeted business advice." : ""}
+${skills.length ? `\nYour skill set in ${skills.join(", ")} could be valuable for entrepreneurship.` : ""}
+What aspect of your business venture would you like to explore?`
   };
 
   return messages[serviceType] || `Hello ${userName}! How can I assist you today?`;

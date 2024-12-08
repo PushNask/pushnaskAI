@@ -53,7 +53,7 @@ serve(async (req) => {
 
     // Analyze CV with OpenAI
     const completion = await openai.createChatCompletion({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
