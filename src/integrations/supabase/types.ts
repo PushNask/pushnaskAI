@@ -84,6 +84,39 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cv_analysis_results: {
         Row: {
           analysis_type: string
@@ -271,10 +304,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      connection_stats: {
+        Row: {
+          active_connections: number | null
+          blocks_hit: number | null
+          blocks_read: number | null
+          committed_transactions: number | null
+          database_name: unknown | null
+          rolled_back_transactions: number | null
+          rows_deleted: number | null
+          rows_fetched: number | null
+          rows_inserted: number | null
+          rows_returned: number | null
+          rows_updated: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      log_event: {
+        Args: {
+          p_user_id: string
+          p_event_type: string
+          p_resource_type: string
+          p_resource_id: string
+          p_details?: Json
+          p_metadata?: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       service_type: "career" | "global" | "education" | "entrepreneurial"
