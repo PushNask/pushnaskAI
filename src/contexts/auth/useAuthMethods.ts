@@ -5,15 +5,11 @@ import { toast } from 'sonner';
 export const useAuthMethods = () => {
   const navigate = useNavigate();
 
-  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
+  const signIn = async (email: string, password: string) => {
     try {
       const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          // Set session duration to 30 days if rememberMe is true, otherwise 1 day
-          expiresIn: rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60
-        }
       });
 
       if (error) {
@@ -29,8 +25,7 @@ export const useAuthMethods = () => {
       if (data.user) {
         await logAuthEvent('sign_in_success', {
           method: 'email',
-          timestamp: new Date().toISOString(),
-          rememberMe
+          timestamp: new Date().toISOString()
         });
       }
 

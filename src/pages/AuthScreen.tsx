@@ -64,7 +64,7 @@ const AuthScreen = () => {
 
     try {
       if (isLogin) {
-        await signIn(email, password, rememberMe);
+        await signIn(email, password);
       } else {
         await signUp(email, password);
       }
