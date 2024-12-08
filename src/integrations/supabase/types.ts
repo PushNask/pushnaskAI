@@ -9,6 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_analysis_results: {
+        Row: {
+          analysis_type: string
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          recommendations: Json | null
+          results: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analysis_type: string
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recommendations?: Json | null
+          results?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analysis_type?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recommendations?: Json | null
+          results?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_prompts: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          name: string
+          prompt_text: string
+          service_type: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name: string
+          prompt_text: string
+          service_type: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name?: string
+          prompt_text?: string
+          service_type?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
       cv_analysis_results: {
         Row: {
           analysis_type: string
