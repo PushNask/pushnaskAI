@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import MessageList from "./MessageList";
+import MessageList from "@/components/MessageList";
 import ChatInputBar from "./ChatInputBar";
 import { Message } from "@/types/chat";
 
