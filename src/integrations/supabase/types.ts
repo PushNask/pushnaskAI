@@ -327,7 +327,7 @@ export type Database = {
           p_user_id: string
           p_event_type: string
           p_resource_type: string
-          p_resource_id: string
+          p_resource_id?: string
           p_details?: Json
           p_metadata?: Json
         }
