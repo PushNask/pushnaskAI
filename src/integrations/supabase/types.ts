@@ -45,6 +45,102 @@ export type Database = {
         }
         Relationships: []
       }
+      service_configs: {
+        Row: {
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          last_used: string | null
+          preferences: Json | null
+          service_type: Database["public"]["Enums"]["service_type"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          last_used?: string | null
+          preferences?: Json | null
+          service_type?: Database["public"]["Enums"]["service_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          last_used?: string | null
+          preferences?: Json | null
+          service_type?: Database["public"]["Enums"]["service_type"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_cvs: {
+        Row: {
+          analysis_results: Json | null
+          content: string | null
+          created_at: string | null
+          id: string
+          parsed_data: Json | null
+          updated_at: string | null
+          user_id: string | null
+          version: number | null
+        }
+        Insert: {
+          analysis_results?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          parsed_data?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+          version?: number | null
+        }
+        Update: {
+          analysis_results?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          parsed_data?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          job_role: string | null
+          metadata: Json | null
+          status: Database["public"]["Enums"]["user_status"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          job_role?: string | null
+          metadata?: Json | null
+          status?: Database["public"]["Enums"]["user_status"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          job_role?: string | null
+          metadata?: Json | null
+          status?: Database["public"]["Enums"]["user_status"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -53,7 +149,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      service_type: "career" | "global" | "education" | "entrepreneurial"
+      user_status: "active" | "pending" | "suspended"
     }
     CompositeTypes: {
       [_ in never]: never
