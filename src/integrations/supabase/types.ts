@@ -117,6 +117,154 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_batches: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          failed_at: string | null
+          id: string
+          metadata: Json | null
+          price_per_credit: number
+          quantity: number
+          service_id: string
+          status: Database["public"]["Enums"]["batch_status"]
+          total_value: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          failed_at?: string | null
+          id?: string
+          metadata?: Json | null
+          price_per_credit: number
+          quantity: number
+          service_id: string
+          status?: Database["public"]["Enums"]["batch_status"]
+          total_value?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          failed_at?: string | null
+          id?: string
+          metadata?: Json | null
+          price_per_credit?: number
+          quantity?: number
+          service_id?: string
+          status?: Database["public"]["Enums"]["batch_status"]
+          total_value?: number | null
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          credit_id: string | null
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          credit_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          credit_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_credit_id_fkey"
+            columns: ["credit_id"]
+            isOneToOne: false
+            referencedRelation: "credits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credits: {
+        Row: {
+          batch_id: string | null
+          code: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          issued_at: string | null
+          issued_to: string | null
+          metadata: Json | null
+          payment_id: string | null
+          redeemed_at: string | null
+          redeemed_by: string | null
+          service_id: string
+          status: Database["public"]["Enums"]["credit_status"]
+          value: number
+        }
+        Insert: {
+          batch_id?: string | null
+          code: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          issued_at?: string | null
+          issued_to?: string | null
+          metadata?: Json | null
+          payment_id?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          service_id: string
+          status?: Database["public"]["Enums"]["credit_status"]
+          value: number
+        }
+        Update: {
+          batch_id?: string | null
+          code?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          issued_at?: string | null
+          issued_to?: string | null
+          metadata?: Json | null
+          payment_id?: string | null
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          service_id?: string
+          status?: Database["public"]["Enums"]["credit_status"]
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credits_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "credit_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cv_analysis_results: {
         Row: {
           analysis_type: string
@@ -322,6 +470,17 @@ export type Database = {
       }
     }
     Functions: {
+      expire_old_credits: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      insert_credit_batch: {
+        Args: {
+          p_credits: Json[]
+          p_batch_id: string
+        }
+        Returns: undefined
+      }
       log_event: {
         Args: {
           p_user_id: string
@@ -335,7 +494,24 @@ export type Database = {
       }
     }
     Enums: {
+      batch_status: "pending" | "processing" | "completed" | "failed"
+      credit_status:
+        | "active"
+        | "issued"
+        | "redeemed"
+        | "expired"
+        | "revoked"
+        | "inactive"
+        | "pending"
+        | "failed"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
       service_type: "career" | "global" | "education" | "entrepreneurial"
+      transaction_type:
+        | "purchase"
+        | "redemption"
+        | "refund"
+        | "expiration"
+        | "revocation"
       user_status: "active" | "pending" | "suspended"
     }
     CompositeTypes: {
