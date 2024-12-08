@@ -41,7 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password,
+        options: {
+          persistSession: true // Ensure session persistence
+        }
+      });
       if (error) throw error;
       navigate('/ai-advisor');
       toast.success('Welcome back!');
@@ -53,7 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          persistSession: true // Ensure session persistence
+        }
+      });
       if (error) throw error;
       toast.success('Check your email to confirm your account!');
     } catch (error) {
