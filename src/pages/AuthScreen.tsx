@@ -18,7 +18,6 @@ const AuthScreen = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
@@ -29,10 +28,17 @@ const AuthScreen = () => {
 
   // Only redirect if we have a session and we're not in the middle of authentication
   useEffect(() => {
+    console.log('AuthScreen - Session state:', {
+      hasSession: Boolean(session),
+      loading,
+      isAuthenticating: loading
+    });
+
     if (session && !loading) {
+      console.log('Session found, redirecting to AI advisor');
       navigate('/ai-advisor');
     }
-  }, [session, navigate, loading]);
+  }, [session, loading, navigate]);
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -70,17 +76,11 @@ const AuthScreen = () => {
         await signUp(email, password);
       }
     } catch (error) {
+      console.error('Authentication error:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleMode = () => {
-    setIsLogin(!isLogin);
-    setError('');
-    setValidationErrors({});
-    navigate(`/auth?mode=${isLogin ? 'signup' : 'login'}`);
   };
 
   return (
@@ -164,27 +164,6 @@ const AuthScreen = () => {
               )}
             </div>
 
-            {isLogin && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600"
-                    disabled={loading}
-                  />
-                  <label htmlFor="remember" className="ml-2 text-sm text-slate-600">
-                    Remember me
-                  </label>
-                </div>
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
-                  Forgot password?
-                </a>
-              </div>
-            )}
-
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700"
@@ -208,7 +187,10 @@ const AuthScreen = () => {
           <Button
             variant="outline"
             className="w-full"
-            onClick={toggleMode}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              navigate(`/auth?mode=${isLogin ? 'signup' : 'login'}`);
+            }}
             disabled={loading}
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
