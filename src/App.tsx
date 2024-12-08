@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
+import Overview from "./pages/Overview";
+import Pricing from "./pages/Pricing";
 import AuthScreen from "./pages/AuthScreen";
 import AIAdvisor from "./pages/AIAdvisor";
 import Reports from "./pages/Reports";
@@ -28,6 +30,8 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/overview" element={<Overview />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<AuthScreen />} />
             <Route
               path="/dashboard"
