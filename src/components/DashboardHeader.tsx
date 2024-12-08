@@ -1,6 +1,6 @@
 import { Bell, Settings, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 const DashboardHeader = () => {
   const { signOut } = useAuth();
