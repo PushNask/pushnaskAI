@@ -29,12 +29,23 @@ export const useAuthMethods = () => {
           p_metadata: { timestamp: new Date().toISOString() }
         });
 
-        navigate('/ai-advisor');
+        // Check if user has a profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile) {
+          navigate('/ai-advisor');
+        } else {
+          navigate('/profile/setup');
+        }
+        
         toast.success('Welcome back!');
       }
     } catch (error) {
       console.error('Sign in error:', error);
-      // Don't try to log failed attempts without user ID
       throw error;
     }
   };
@@ -67,7 +78,6 @@ export const useAuthMethods = () => {
       }
     } catch (error) {
       console.error('Sign up error:', error);
-      // Don't try to log failed attempts without user ID
       throw error;
     }
   };
