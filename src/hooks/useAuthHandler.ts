@@ -2,41 +2,47 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { AuthError, AuthResponse } from '@supabase/supabase-js';
 
 const AUTH_TIMEOUT = 15000; // 15 seconds timeout
+
+interface Credentials {
+  email: string;
+  password: string;
+}
 
 export const useAuthHandler = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleAuth = useCallback(async (credentials: { email: string; password: string }, isLogin: boolean) => {
+  const handleAuth = useCallback(async (credentials: Credentials, isLogin: boolean) => {
     setIsLoading(true);
     setError(null);
 
+    console.log(`Attempting ${isLogin ? 'login' : 'signup'} for:`, credentials.email);
+
     // Create a timeout promise
-    const timeoutPromise = new Promise((_, reject) => {
+    const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => {
         reject(new Error('Authentication timeout - Please try again'));
       }, AUTH_TIMEOUT);
     });
 
     try {
-      console.log(`Attempting ${isLogin ? 'login' : 'signup'} for:`, credentials.email);
-      
       // Create the auth promise
-      const authPromise = isLogin 
+      const authPromise: Promise<AuthResponse> = isLogin 
         ? supabase.auth.signInWithPassword(credentials)
         : supabase.auth.signUp(credentials);
 
       // Race between auth and timeout
       const response = await Promise.race([authPromise, timeoutPromise]);
 
+      console.log('Auth response:', response);
+
       if (response.error) {
         throw new Error(response.error.message);
       }
-
-      console.log('Auth response:', response);
 
       // Handle successful authentication
       if (response.data?.user) {
