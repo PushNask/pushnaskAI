@@ -3,7 +3,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useTranslations } from '@/contexts/TranslationsContext';
+import { useTranslation } from 'react-i18next';
 
 interface AuthFormProps {
   isLogin: boolean;
@@ -21,7 +21,7 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
     password?: string;
   }>({});
   
-  const { t } = useTranslations();
+  const { t } = useTranslation();
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};

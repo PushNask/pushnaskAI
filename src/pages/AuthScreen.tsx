@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { useTranslations } from '@/contexts/TranslationsContext';
+import { useTranslation } from 'react-i18next';
 
 const AuthScreen = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,7 @@ const AuthScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { signIn, signUp, session } = useAuth();
-  const { t } = useTranslations();
+  const { t } = useTranslation();
 
   // Update isLogin state when searchParams change
   useEffect(() => {
@@ -75,7 +75,7 @@ const AuthScreen = () => {
             </Button>
             <div className="space-y-0.5">
               <CardTitle className="text-2xl font-bold">
-                {isLogin ? t('common.welcome') : t('auth.createAccount')}
+                {isLogin ? t('auth.signIn') : t('auth.createAccount')}
               </CardTitle>
               <CardDescription>
                 {isLogin
