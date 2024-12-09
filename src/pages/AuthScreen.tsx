@@ -7,24 +7,14 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 const AuthScreen = () => {
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, session } = useAuth();
+  const { session } = useAuth();
   const { t } = useTranslation();
-
-  // Clear error when switching modes
-  useEffect(() => {
-    setError('');
-    setLoading(false);
-  }, [isLogin]);
 
   // Check session and redirect if already authenticated
   useEffect(() => {
@@ -34,32 +24,10 @@ const AuthScreen = () => {
     }
   }, [session, navigate]);
 
-  const handleAuth = async (email: string, password: string) => {
-    setError('');
-    setLoading(true);
-    console.log(`Attempting ${isLogin ? 'sign in' : 'sign up'} for:`, email);
-
-    try {
-      if (isLogin) {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password);
-        // Clear loading state after signup since we expect user to verify email
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Authentication error:', error);
-      setError((error as Error).message);
-      toast.error((error as Error).message);
-      setLoading(false);
-    }
-  };
-
   const toggleMode = () => {
     const newMode = isLogin ? 'signup' : 'login';
     navigate(`/auth?mode=${newMode}`, { replace: true });
     setIsLogin(!isLogin);
-    setError('');
   };
 
   // Don't render if already authenticated
@@ -91,12 +59,7 @@ const AuthScreen = () => {
           </div>
         </CardHeader>
         <CardContent className="pt-4">
-          <AuthForm
-            isLogin={isLogin}
-            onSubmit={handleAuth}
-            error={error}
-            loading={loading}
-          />
+          <AuthForm isLogin={isLogin} />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 pt-6">
           <div className="relative flex w-full items-center justify-center">
@@ -109,7 +72,6 @@ const AuthScreen = () => {
             variant="outline"
             className="w-full"
             onClick={toggleMode}
-            disabled={loading}
           >
             {isLogin 
               ? t('auth.noAccount')
