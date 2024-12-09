@@ -8,6 +8,7 @@ const resources = {
       common: {
         welcome: "Welcome back",
         credits: "credits",
+        or: "or",
         services: {
           career: "Career Development",
           global: "Global Exploration",
@@ -27,6 +28,7 @@ const resources = {
         rememberMe: "Remember me",
         forgotPassword: "Forgot password?",
         noAccount: "Don't have an account?",
+        haveAccount: "Already have an account?",
         emailRequired: "Email is required",
         invalidEmail: "Please enter a valid email",
         passwordRequired: "Password is required",
@@ -34,7 +36,9 @@ const resources = {
         signingIn: "Signing in...",
         creatingAccount: "Creating account...",
         signIn: "Sign in",
-        createAccount: "Create account"
+        createAccount: "Create account",
+        enterCredentials: "Enter your credentials to continue",
+        fillDetails: "Fill in your details to create an account"
       },
       credits: {
         balance: "Credit Balance",
@@ -50,6 +54,7 @@ const resources = {
       common: {
         welcome: "Bienvenue",
         credits: "crédits",
+        or: "ou",
         services: {
           career: "Développement de carrière",
           global: "Exploration mondiale",
@@ -69,6 +74,7 @@ const resources = {
         rememberMe: "Se souvenir de moi",
         forgotPassword: "Mot de passe oublié?",
         noAccount: "Vous n'avez pas de compte?",
+        haveAccount: "Vous avez déjà un compte?",
         emailRequired: "L'email est requis",
         invalidEmail: "Veuillez entrer un email valide",
         passwordRequired: "Le mot de passe est requis",
@@ -76,7 +82,9 @@ const resources = {
         signingIn: "Connexion en cours...",
         creatingAccount: "Création du compte...",
         signIn: "Se connecter",
-        createAccount: "Créer un compte"
+        createAccount: "Créer un compte",
+        enterCredentials: "Entrez vos identifiants pour continuer",
+        fillDetails: "Remplissez vos informations pour créer un compte"
       },
       credits: {
         balance: "Solde des crédits",

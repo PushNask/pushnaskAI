@@ -5,13 +5,11 @@ import './index.css';
 import './i18n/config';
 
 const container = document.getElementById('root');
-
 if (!container) {
   throw new Error('Could not find root element');
 }
 
 const root = createRoot(container);
-
 root.render(
   <StrictMode>
     <App />
