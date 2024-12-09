@@ -46,8 +46,7 @@ export const useAuthMethods = () => {
             throw new Error('Error loading user profile');
           }
 
-          // Small timeout to ensure state updates are processed
-          await new Promise(resolve => setTimeout(resolve, 100));
+          console.log('Profile check result:', { profile });
 
           // Navigate based on profile existence
           if (profile) {
@@ -76,21 +75,9 @@ export const useAuthMethods = () => {
         throw new Error('Please provide both email and password');
       }
 
-      // Password strength validation
-      if (password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
-      }
-
-      if (!/[A-Z]/.test(password)) {
-        throw new Error('Password must contain at least one uppercase letter');
-      }
-
-      if (!/[0-9]/.test(password)) {
-        throw new Error('Password must contain at least one number');
-      }
-
-      if (!/[!@#$%^&*]/.test(password)) {
-        throw new Error('Password must contain at least one special character (!@#$%^&*)');
+      // Simplified password validation
+      if (password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -109,8 +96,7 @@ export const useAuthMethods = () => {
         throw error;
       }
 
-      // Small timeout to ensure state updates are processed
-      await new Promise(resolve => setTimeout(resolve, 100));
+      console.log('Sign up successful:', data);
       
       toast.success('Please check your email to confirm your account!');
     } catch (error) {
@@ -126,9 +112,6 @@ export const useAuthMethods = () => {
         console.error('Sign out error:', error);
         throw error;
       }
-      
-      // Small timeout to ensure state updates are processed
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       navigate('/auth');
       toast.success('Successfully signed out');

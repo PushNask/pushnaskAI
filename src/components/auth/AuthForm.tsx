@@ -35,17 +35,8 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
 
     if (!password) {
       errors.password = t('auth.passwordRequired');
-    } else if (!isLogin) {
-      // Password requirements for signup
-      if (password.length < 8) {
-        errors.password = t('auth.passwordLength');
-      } else if (!/[A-Z]/.test(password)) {
-        errors.password = t('auth.passwordUppercase');
-      } else if (!/[0-9]/.test(password)) {
-        errors.password = t('auth.passwordNumber');
-      } else if (!/[!@#$%^&*]/.test(password)) {
-        errors.password = t('auth.passwordSpecial');
-      }
+    } else if (!isLogin && password.length < 6) {
+      errors.password = t('auth.passwordLength');
     }
 
     setValidationErrors(errors);
@@ -104,12 +95,12 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
               setPassword(e.target.value);
               setValidationErrors({ ...validationErrors, password: undefined });
             }}
-            placeholder="••••••••"
+            placeholder="••••••"
             className={`${validationErrors.password ? 'border-red-500' : ''} pr-10`}
             disabled={loading}
             autoComplete={isLogin ? "current-password" : "new-password"}
             required
-            minLength={8}
+            minLength={6}
           />
           <button
             type="button"
