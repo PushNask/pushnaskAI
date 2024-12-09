@@ -26,8 +26,7 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
     const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-
+    
     if (!email) {
       errors.email = t('auth.emailRequired');
     } else if (!EMAIL_REGEX.test(email)) {
@@ -36,8 +35,17 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
 
     if (!password) {
       errors.password = t('auth.passwordRequired');
-    } else if (!isLogin && !PASSWORD_REGEX.test(password)) {
-      errors.password = t('auth.passwordRequirements');
+    } else if (!isLogin) {
+      // Password requirements for signup
+      if (password.length < 8) {
+        errors.password = t('auth.passwordLength');
+      } else if (!/[A-Z]/.test(password)) {
+        errors.password = t('auth.passwordUppercase');
+      } else if (!/[0-9]/.test(password)) {
+        errors.password = t('auth.passwordNumber');
+      } else if (!/[!@#$%^&*]/.test(password)) {
+        errors.password = t('auth.passwordSpecial');
+      }
     }
 
     setValidationErrors(errors);
@@ -74,6 +82,7 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
           className={validationErrors.email ? 'border-red-500' : ''}
           disabled={loading}
           autoComplete="email"
+          required
         />
         {validationErrors.email && (
           <p className="text-sm text-red-500 animate-in fade-in-50">
@@ -99,11 +108,14 @@ export const AuthForm = ({ isLogin, onSubmit, error, loading }: AuthFormProps) =
             className={`${validationErrors.password ? 'border-red-500' : ''} pr-10`}
             disabled={loading}
             autoComplete={isLogin ? "current-password" : "new-password"}
+            required
+            minLength={8}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full p-1"
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>

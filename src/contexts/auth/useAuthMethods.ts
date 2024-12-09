@@ -55,7 +55,7 @@ export const useAuthMethods = () => {
             toast.success('Welcome back!');
           } else {
             navigate('/profile/setup');
-            toast.info('Please complete your profile setup');
+            toast.success('Please complete your profile setup');
           }
         } catch (innerError) {
           console.error('Post-authentication error:', innerError);
@@ -76,13 +76,36 @@ export const useAuthMethods = () => {
         throw new Error('Please provide both email and password');
       }
 
-      const { error } = await supabase.auth.signUp({
+      // Password strength validation
+      if (password.length < 8) {
+        throw new Error('Password must be at least 8 characters long');
+      }
+
+      if (!/[A-Z]/.test(password)) {
+        throw new Error('Password must contain at least one uppercase letter');
+      }
+
+      if (!/[0-9]/.test(password)) {
+        throw new Error('Password must contain at least one number');
+      }
+
+      if (!/[!@#$%^&*]/.test(password)) {
+        throw new Error('Password must contain at least one special character (!@#$%^&*)');
+      }
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin + '/auth?mode=login'
+        }
       });
 
       if (error) {
         console.error('Sign up error:', error);
+        if (error.message.includes('already registered')) {
+          throw new Error('This email is already registered. Please try signing in instead.');
+        }
         throw error;
       }
 
