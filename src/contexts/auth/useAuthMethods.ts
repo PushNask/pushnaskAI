@@ -41,7 +41,7 @@ export const useAuthMethods = () => {
             .eq('id', data.user.id)
             .single();
 
-          if (profileError) {
+          if (profileError && !profileError.message.includes('not found')) {
             console.error('Error fetching profile:', profileError);
             throw new Error('Error loading user profile');
           }

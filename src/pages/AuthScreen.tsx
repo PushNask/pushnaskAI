@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 const AuthScreen = () => {
   const [searchParams] = useSearchParams();
@@ -19,18 +20,16 @@ const AuthScreen = () => {
   const { signIn, signUp, session } = useAuth();
   const { t } = useTranslation();
 
-  // Update isLogin state when searchParams change
   useEffect(() => {
     setIsLogin(searchParams.get('mode') !== 'signup');
   }, [searchParams]);
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (session && !loading) {
-      console.log('Session found, redirecting to AI advisor');
+    if (session) {
+      console.log('Session detected, redirecting to AI advisor');
       navigate('/ai-advisor');
     }
-  }, [session, loading, navigate]);
+  }, [session, navigate]);
 
   const handleAuth = async (email: string, password: string) => {
     setError('');
@@ -46,6 +45,7 @@ const AuthScreen = () => {
     } catch (error) {
       console.error('Authentication error:', error);
       setError((error as Error).message);
+      toast.error((error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ const AuthScreen = () => {
     setError('');
   };
 
-  if (session && !loading) return null;
+  if (session) return null;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
