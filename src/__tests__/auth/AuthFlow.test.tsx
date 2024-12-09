@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/auth/AuthContext';
 import AuthScreen from '@/pages/AuthScreen';
 import { supabase } from '@/integrations/supabase/client';
-import { vi } from 'vitest';
+import { vi, describe, test, expect, beforeEach } from 'vitest';
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
