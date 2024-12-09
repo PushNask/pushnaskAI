@@ -21,7 +21,6 @@ export const useAuthMethods = () => {
       if (error) {
         console.error('Sign in error:', error);
         
-        // Handle specific error cases
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please try again.');
         } else if (error.message.includes('Email not confirmed')) {
@@ -47,6 +46,7 @@ export const useAuthMethods = () => {
             throw new Error('Error loading user profile');
           }
 
+          // Log profile check result
           console.log('Profile check result:', { hasProfile: !!profile });
 
           // Navigate based on profile existence
@@ -55,6 +55,7 @@ export const useAuthMethods = () => {
             toast.success('Welcome back!');
           } else {
             navigate('/profile/setup');
+            toast.info('Please complete your profile setup');
           }
         } catch (innerError) {
           console.error('Post-authentication error:', innerError);
