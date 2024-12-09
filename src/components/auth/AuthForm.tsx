@@ -3,6 +3,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from 'react-i18next';
 import useAuthHandler from '@/hooks/useAuthHandler';
 
@@ -14,13 +15,14 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
   }>({});
   
   const { t } = useTranslation();
-  const { handleAuth, isLoading, error } = useAuthHandler();
+  const { handleAuth, isLoading, error, failedAttempts } = useAuthHandler();
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -45,8 +47,25 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-    await handleAuth({ email, password }, isLogin);
+    
+    await handleAuth({ 
+      email, 
+      password,
+      rememberMe 
+    }, isLogin);
   };
+
+  // Show account locked message if too many failed attempts
+  if (failedAttempts >= 5) {
+    return (
+      <Alert variant="destructive" className="animate-in fade-in-50">
+        <AlertDescription>
+          Account temporarily locked due to too many failed attempts. 
+          Please try again later or reset your password.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,6 +135,22 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
           </p>
         )}
       </div>
+
+      {isLogin && (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="rememberMe"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+          />
+          <label
+            htmlFor="rememberMe"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Remember me
+          </label>
+        </div>
+      )}
 
       <Button
         type="submit"
