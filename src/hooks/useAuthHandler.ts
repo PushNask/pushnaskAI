@@ -36,12 +36,7 @@ export const useAuthHandler = () => {
       const authPromise: Promise<AuthResponse> = isLogin 
         ? supabase.auth.signInWithPassword({
             email: credentials.email,
-            password: credentials.password,
-            options: {
-              data: {
-                persistSession: credentials.rememberMe
-              }
-            }
+            password: credentials.password
           })
         : supabase.auth.signUp({
             email: credentials.email,
@@ -61,6 +56,14 @@ export const useAuthHandler = () => {
       // Handle successful authentication
       if (response.data?.user) {
         if (isLogin) {
+          // Set session persistence based on rememberMe
+          if (credentials.rememberMe) {
+            await supabase.auth.setSession({
+              access_token: response.data.session!.access_token,
+              refresh_token: response.data.session!.refresh_token
+            });
+          }
+          
           // Check if profile exists
           const { data: profile } = await supabase
             .from('profiles')
