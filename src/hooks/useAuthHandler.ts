@@ -24,12 +24,9 @@ export const useAuthHandler = () => {
 
     console.log(`Attempting ${isLogin ? 'login' : 'signup'} for:`, credentials.email);
 
-    // Create a timeout promise
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error('Authentication timeout - Please try again'));
-      }, AUTH_TIMEOUT);
-    });
+    // Create an AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), AUTH_TIMEOUT);
 
     try {
       // Create the auth promise
@@ -47,7 +44,14 @@ export const useAuthHandler = () => {
           });
 
       // Race between auth and timeout
-      const response = await Promise.race([authPromise, timeoutPromise]);
+      const response = await Promise.race([
+        authPromise,
+        new Promise<never>((_, reject) => {
+          controller.signal.addEventListener('abort', () => {
+            reject(new Error('Authentication timeout - Please try again'));
+          });
+        })
+      ]);
 
       if (response.error) {
         throw response.error;
@@ -89,9 +93,21 @@ export const useAuthHandler = () => {
         setFailedAttempts(prev => prev + 1);
       }
 
-      const errorMessage = error instanceof AuthError 
-        ? error.message 
-        : 'An unexpected error occurred';
+      let errorMessage = 'An unexpected error occurred';
+      
+      if (error instanceof AuthError) {
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please confirm your email before signing in';
+        } else if (error.message.includes('timeout')) {
+          errorMessage = 'Authentication timed out - Please try again';
+        } else {
+          errorMessage = error.message;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       
       setError(errorMessage);
       toast.error(errorMessage);
@@ -99,6 +115,7 @@ export const useAuthHandler = () => {
       // Auto-reset error after 5 seconds
       setTimeout(() => setError(null), 5000);
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   }, [navigate]);
