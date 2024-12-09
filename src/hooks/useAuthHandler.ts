@@ -1,8 +1,29 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { AuthError, AuthResponse } from '@supabase/supabase-js';
+import { z } from 'zod';
+import { AuthError } from '@supabase/supabase-js';
+
+// Password validation schema
+const passwordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number');
+
+interface AuthState {
+  loading: boolean;
+  error: string | null;
+  failedAttempts: number;
+  lastAttempt: number;
+}
+
+interface UseAuthHandlerOptions {
+  maxAttempts?: number;
+  lockoutDuration?: number; // in minutes
+  tokenStorage?: 'cookie' | 'memory';
+}
 
 interface Credentials {
   email: string;
@@ -10,87 +31,134 @@ interface Credentials {
   rememberMe?: boolean;
 }
 
-const AUTH_TIMEOUT = 15000; // 15 seconds timeout
+export const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
+  const {
+    maxAttempts = 5,
+    lockoutDuration = 30,
+    tokenStorage = 'cookie'
+  } = options;
 
-export const useAuthHandler = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [authState, setAuthState] = useState<AuthState>({
+    loading: false,
+    error: null,
+    failedAttempts: 0,
+    lastAttempt: 0
+  });
   const navigate = useNavigate();
 
+  // Check if account is locked
+  const isAccountLocked = useCallback(() => {
+    const { failedAttempts, lastAttempt } = authState;
+    if (failedAttempts >= maxAttempts) {
+      const timeSinceLastAttempt = Date.now() - lastAttempt;
+      const lockoutMs = lockoutDuration * 60 * 1000;
+      return timeSinceLastAttempt < lockoutMs;
+    }
+    return false;
+  }, [authState, maxAttempts, lockoutDuration]);
+
   const handleAuth = useCallback(async (credentials: Credentials, isLogin: boolean) => {
-    setIsLoading(true);
-    setError(null);
-
-    console.log(`Attempting ${isLogin ? 'login' : 'signup'} for:`, credentials.email);
-
-    // Create an AbortController for timeout handling
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), AUTH_TIMEOUT);
-
     try {
-      // Create the auth promise
-      const authPromise: Promise<AuthResponse> = isLogin 
-        ? supabase.auth.signInWithPassword({
-            email: credentials.email,
-            password: credentials.password
-          })
-        : supabase.auth.signUp({
-            email: credentials.email,
-            password: credentials.password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/auth/callback`
-            }
-          });
-
-      // Race between auth and timeout
-      const response = await Promise.race([
-        authPromise,
-        new Promise<never>((_, reject) => {
-          controller.signal.addEventListener('abort', () => {
-            reject(new Error('Authentication timeout - Please try again'));
-          });
-        })
-      ]);
-
-      if (response.error) {
-        throw response.error;
+      // Check for account lockout
+      if (isAccountLocked()) {
+        throw new Error('Account temporarily locked. Please try again later.');
       }
 
-      // Handle successful authentication
-      if (response.data?.user) {
-        if (isLogin) {
-          // Set session persistence based on rememberMe
-          if (credentials.rememberMe) {
-            await supabase.auth.setSession({
-              access_token: response.data.session!.access_token,
-              refresh_token: response.data.session!.refresh_token
-            });
-          }
-          
-          // Check if profile exists
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', response.data.user.id)
-            .single();
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
+      console.log(`Attempting ${isLogin ? 'login' : 'signup'} for:`, credentials.email);
 
-          if (profile) {
-            navigate('/ai-advisor');
-            toast.success('Welcome back!');
-          } else {
-            navigate('/profile/setup');
-            toast.success('Please complete your profile setup');
-          }
-        } else {
-          toast.success('Please check your email to confirm your account!');
+      // Validate password for new accounts
+      if (!isLogin) {
+        const passwordValidation = passwordSchema.safeParse(credentials.password);
+        if (!passwordValidation.success) {
+          throw new Error(passwordValidation.error.errors[0].message);
         }
+      }
+
+      // Create an AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      try {
+        // Attempt authentication
+        const authPromise = isLogin
+          ? supabase.auth.signInWithPassword({
+              email: credentials.email,
+              password: credentials.password,
+            })
+          : supabase.auth.signUp({
+              email: credentials.email,
+              password: credentials.password,
+              options: {
+                emailRedirectTo: `${window.location.origin}/auth/callback`
+              }
+            });
+
+        // Race between auth and timeout
+        const response = await Promise.race([
+          authPromise,
+          new Promise<never>((_, reject) => {
+            controller.signal.addEventListener('abort', () => {
+              reject(new Error('Authentication timeout - Please try again'));
+            });
+          })
+        ]);
+
+        if (response.error) {
+          throw response.error;
+        }
+
+        // Handle successful authentication
+        if (response.data?.user) {
+          if (isLogin) {
+            // Handle session persistence based on rememberMe
+            if (credentials.rememberMe && response.data.session) {
+              if (tokenStorage === 'cookie') {
+                document.cookie = `auth-token=${response.data.session.access_token}; path=/; secure; samesite=strict`;
+              } else {
+                sessionStorage.setItem('auth-token', response.data.session.access_token);
+              }
+            }
+
+            // Check if profile exists
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', response.data.user.id)
+              .single();
+
+            if (profile) {
+              navigate('/ai-advisor');
+              toast.success('Welcome back!');
+            } else {
+              navigate('/profile/setup');
+              toast.success('Please complete your profile setup');
+            }
+          } else {
+            toast.success('Please check your email to confirm your account!');
+          }
+
+          // Reset failed attempts on success
+          setAuthState({
+            loading: false,
+            error: null,
+            failedAttempts: 0,
+            lastAttempt: Date.now()
+          });
+        }
+      } finally {
+        clearTimeout(timeoutId);
       }
     } catch (error) {
       console.error('Auth error:', error);
       
       if (isLogin) {
-        setFailedAttempts(prev => prev + 1);
+        setAuthState(prev => ({
+          loading: false,
+          error: error instanceof Error ? error.message : 'Authentication failed',
+          failedAttempts: prev.failedAttempts + 1,
+          lastAttempt: Date.now()
+        }));
       }
 
       let errorMessage = 'An unexpected error occurred';
@@ -109,22 +177,33 @@ export const useAuthHandler = () => {
         errorMessage = error.message;
       }
       
-      setError(errorMessage);
+      setAuthState(prev => ({ ...prev, error: errorMessage }));
       toast.error(errorMessage);
 
       // Auto-reset error after 5 seconds
-      setTimeout(() => setError(null), 5000);
+      setTimeout(() => setAuthState(prev => ({ ...prev, error: null })), 5000);
     } finally {
-      clearTimeout(timeoutId);
-      setIsLoading(false);
+      setAuthState(prev => ({ ...prev, loading: false }));
     }
-  }, [navigate]);
+  }, [navigate, isAccountLocked, tokenStorage]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Clear any stored tokens on unmount
+      if (tokenStorage === 'memory') {
+        sessionStorage.removeItem('auth-token');
+      }
+    };
+  }, [tokenStorage]);
 
   return {
+    isLoading: authState.loading,
+    error: authState.error,
+    failedAttempts: authState.failedAttempts,
     handleAuth,
-    isLoading,
-    error,
-    failedAttempts
+    isAccountLocked: isAccountLocked(),
+    resetFailedAttempts: () => setAuthState(prev => ({ ...prev, failedAttempts: 0 }))
   };
 };
 
