@@ -14,6 +14,7 @@ import { ServiceConfig } from "@/types/service";
 import { AppError, handleError } from "@/utils/errorHandling";
 import { Skeleton } from "./ui/skeleton";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { usePayment } from "@/hooks/usePayment";
 
 const services: ServiceConfig[] = [
   {
@@ -53,7 +54,7 @@ const services: ServiceConfig[] = [
 const ServiceCards = () => {
   const [selectedService, setSelectedService] = useState<ServiceConfig | null>(null);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { initiatePayment, isLoading } = usePayment();
 
   const handleBuyCredit = (service: ServiceConfig) => {
     try {
@@ -70,30 +71,25 @@ const ServiceCards = () => {
   };
 
   const handlePaymentMethod = async (method: string) => {
-    setIsLoading(true);
-    try {
-      if (!selectedService) {
-        throw new AppError("No service selected", "NO_SERVICE_SELECTED", 400);
-      }
-
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+    if (!selectedService) {
       toast({
-        title: "Payment Successful",
-        description: `Successfully processed ${method} payment for ${selectedService.title}`,
-      });
-      setShowPaymentDialog(false);
-    } catch (error) {
-      const errorDetails = handleError(error);
-      toast({
-        title: "Payment Failed",
-        description: errorDetails.message,
+        title: "No service selected",
+        description: "Please select a service first",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    if (method === 'stripe') {
+      await initiatePayment(selectedService.id, selectedService.credits);
+    } else {
+      toast({
+        title: "Payment Method Unavailable",
+        description: "This payment method is not available yet",
+        variant: "destructive"
+      });
+    }
+    setShowPaymentDialog(false);
   };
 
   if (isLoading) {
@@ -158,17 +154,10 @@ const ServiceCards = () => {
           <div className="grid gap-4 py-4">
             <Button 
               className="w-full" 
-              onClick={() => handlePaymentMethod('Stripe')}
+              onClick={() => handlePaymentMethod('stripe')}
               disabled={isLoading}
             >
               Pay with Stripe
-            </Button>
-            <Button 
-              className="w-full" 
-              onClick={() => handlePaymentMethod('Mobile Money')}
-              disabled={isLoading}
-            >
-              Pay with Mobile Money
             </Button>
             <Button 
               className="w-full" 
