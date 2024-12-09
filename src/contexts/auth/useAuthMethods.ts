@@ -46,8 +46,8 @@ export const useAuthMethods = () => {
             throw new Error('Error loading user profile');
           }
 
-          // Log profile check result
-          console.log('Profile check result:', { hasProfile: !!profile });
+          // Small timeout to ensure state updates are processed
+          await new Promise(resolve => setTimeout(resolve, 100));
 
           // Navigate based on profile existence
           if (profile) {
@@ -109,6 +109,9 @@ export const useAuthMethods = () => {
         throw error;
       }
 
+      // Small timeout to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       toast.success('Please check your email to confirm your account!');
     } catch (error) {
       console.error('Sign up error:', error);
@@ -123,6 +126,9 @@ export const useAuthMethods = () => {
         console.error('Sign out error:', error);
         throw error;
       }
+      
+      // Small timeout to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       navigate('/auth');
       toast.success('Successfully signed out');

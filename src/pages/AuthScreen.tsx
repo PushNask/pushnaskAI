@@ -20,10 +20,13 @@ const AuthScreen = () => {
   const { signIn, signUp, session } = useAuth();
   const { t } = useTranslation();
 
+  // Clear error when switching modes
   useEffect(() => {
-    setIsLogin(searchParams.get('mode') !== 'signup');
-  }, [searchParams]);
+    setError('');
+    setLoading(false);
+  }, [isLogin]);
 
+  // Check session and redirect if already authenticated
   useEffect(() => {
     if (session) {
       console.log('Session detected, redirecting to AI advisor');
@@ -41,12 +44,13 @@ const AuthScreen = () => {
         await signIn(email, password);
       } else {
         await signUp(email, password);
+        // Clear loading state after signup since we expect user to verify email
+        setLoading(false);
       }
     } catch (error) {
       console.error('Authentication error:', error);
       setError((error as Error).message);
       toast.error((error as Error).message);
-    } finally {
       setLoading(false);
     }
   };
@@ -58,6 +62,7 @@ const AuthScreen = () => {
     setError('');
   };
 
+  // Don't render if already authenticated
   if (session) return null;
 
   return (
