@@ -1,79 +1,41 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth/AuthContext';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useSessionManager } from '@/hooks/useSessionManager';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, profile } = useAuth();
+  const { isValidating, validateSession } = useSessionManager();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isValidating, setIsValidating] = useState(true);
-  const [lastValidation, setLastValidation] = useState(Date.now());
 
   useEffect(() => {
-    let validationTimer: NodeJS.Timeout;
-    let sessionCheckInterval: NodeJS.Timeout;
-
-    const validateSession = async () => {
-      console.log('Validating session...', {
-        sessionExists: !!session?.user?.id,
-        loading,
-        hasProfile: !!profile,
-        path: location.pathname
-      });
-
-      setIsValidating(true);
-      
-      try {
-        if (!loading) {
-          if (!session) {
-            console.log('No session found, redirecting to auth');
-            toast.error('Please sign in to continue');
-            navigate('/auth');
-          } else if (!profile && location.pathname !== '/profile/setup') {
-            console.log('No profile found, redirecting to profile setup');
-            toast.info('Please complete your profile setup to continue');
-            navigate('/profile/setup');
-          }
+    const checkAuth = async () => {
+      if (!loading) {
+        const isValid = await validateSession();
+        
+        if (!isValid) {
+          return;
         }
-      } catch (error) {
-        console.error('Session validation error:', error);
-        toast.error('Authentication error. Please try signing in again.');
-        navigate('/auth');
-      } finally {
-        setIsValidating(false);
-        setLastValidation(Date.now());
+        
+        if (!profile && location.pathname !== '/profile/setup') {
+          console.log('No profile found, redirecting to profile setup');
+          navigate('/profile/setup');
+        }
       }
     };
 
-    // Initial validation
-    validateSession();
+    checkAuth();
+  }, [session, loading, profile, navigate, location.pathname, validateSession]);
 
-    // Set up periodic session checks
-    sessionCheckInterval = setInterval(() => {
-      const timeSinceLastValidation = Date.now() - lastValidation;
-      if (timeSinceLastValidation > 30000) { // 30 seconds
-        validateSession();
-      }
-    }, 30000); // Check every 30 seconds
-
-    // Cleanup
-    return () => {
-      clearTimeout(validationTimer);
-      clearInterval(sessionCheckInterval);
-    };
-  }, [session, loading, profile, navigate, location.pathname, lastValidation]);
-
-  // Show loading state
   if (loading || isValidating) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-gray-500" />
+        <Loader2 className="h-12 w-12 animate-spin text-gray-500" role="status" />
       </div>
     );
   }
 
-  // Only render children if we have both session and profile
   return session && (profile || location.pathname === '/profile/setup') ? <>{children}</> : null;
 }
