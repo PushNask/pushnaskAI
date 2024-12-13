@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppError, handleError } from "@/utils/errorHandling";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { UserCV } from "./types/cvTypes";
+import { UserCV, ParsedCVData } from "./types/cvTypes";
 
 interface LoadingProps {
   className?: string;
