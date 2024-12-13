@@ -17,7 +17,7 @@ interface UseAuthHandlerOptions {
   tokenStorage?: StorageType;
 }
 
-export const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
+const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
   const {
     maxAttempts = 5,
     lockoutDuration = 30,
@@ -109,3 +109,5 @@ export const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
     resetFailedAttempts: () => setAuthState(prev => ({ ...prev, failedAttempts: 0 }))
   };
 };
+
+export { useAuthHandler };

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from 'react-i18next';
-import useAuthHandler from '@/hooks/useAuthHandler';
+import { useAuthHandler } from '@/hooks/useAuthHandler';
 
 interface AuthFormProps {
   isLogin: boolean;
