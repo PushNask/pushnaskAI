@@ -13,22 +13,32 @@ const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
   const navigate = useNavigate();
   const location = useLocation();
-  const { session } = useAuth();
+  const { session, loading } = useAuth();
   const { t } = useTranslation();
 
-  // Check session and redirect if already authenticated
+  const from = (location.state as any)?.from || '/ai-advisor';
+
   useEffect(() => {
-    if (session) {
-      console.log('Session detected, redirecting to AI advisor');
-      navigate('/ai-advisor');
+    if (session && !loading) {
+      console.log('Session detected, redirecting to:', from);
+      navigate(from, { replace: true });
     }
-  }, [session, navigate]);
+  }, [session, loading, navigate, from]);
 
   const toggleMode = () => {
     const newMode = isLogin ? 'signup' : 'login';
     navigate(`/auth?mode=${newMode}`, { replace: true });
     setIsLogin(!isLogin);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   // Don't render if already authenticated
   if (session) return null;

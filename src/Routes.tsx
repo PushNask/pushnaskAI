@@ -1,4 +1,4 @@
-import { Routes as RouterRoutes, Route } from "react-router-dom";
+import { Routes as RouterRoutes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Overview from "./pages/Overview";
@@ -17,10 +17,13 @@ import ServiceSetup from "./components/profile/ServiceSetup";
 
 const Routes = () => (
   <RouterRoutes>
+    {/* Public routes */}
     <Route path="/" element={<LandingPage />} />
     <Route path="/overview" element={<Overview />} />
     <Route path="/pricing" element={<Pricing />} />
     <Route path="/auth" element={<AuthScreen />} />
+
+    {/* Protected routes */}
     <Route
       path="/profile/setup"
       element={
@@ -101,6 +104,9 @@ const Routes = () => (
         </ProtectedRoute>
       }
     />
+
+    {/* Catch all route */}
+    <Route path="*" element={<Navigate to="/" replace />} />
   </RouterRoutes>
 );
 

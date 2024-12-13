@@ -13,15 +13,23 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   useEffect(() => {
     const checkAuth = async () => {
       if (!loading) {
+        if (!session) {
+          console.log('No session found, redirecting to auth');
+          navigate('/auth', { 
+            replace: true,
+            state: { from: location.pathname }
+          });
+          return;
+        }
+
         const isValid = await validateSession();
-        
         if (!isValid) {
           return;
         }
         
         if (!profile && location.pathname !== '/profile/setup') {
           console.log('No profile found, redirecting to profile setup');
-          navigate('/profile/setup');
+          navigate('/profile/setup', { replace: true });
         }
       }
     };
