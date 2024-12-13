@@ -30,7 +30,7 @@ export const ProfileForm = ({ initialData, title }: ProfileFormProps) => {
             <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="fullName"
+                name="full_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
@@ -69,7 +69,7 @@ export const ProfileForm = ({ initialData, title }: ProfileFormProps) => {
               />
               <FormField
                 control={form.control}
-                name="phoneNumber"
+                name="phone_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>

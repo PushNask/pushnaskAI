@@ -15,17 +15,17 @@ export const useProfileManagement = (initialData?: Partial<ProfileFormData>) => 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: initialData || {
-      fullName: "",
+      full_name: "",
       current_role: "",
       email: "",
-      phoneNumber: "",
+      phone_number: "",
       nationality: "",
       country_of_residence: "",
-      educationLevel: "",
-      fieldOfStudy: "",
-      workExperience: "",
-      workPreference: "",
-      willingToRelocate: false
+      education_level: "",
+      field_of_study: "",
+      work_experience: "",
+      work_preference: "",
+      willing_to_relocate: false
     }
   });
 
