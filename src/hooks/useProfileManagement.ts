@@ -20,7 +20,7 @@ export const useProfileManagement = (initialData?: Partial<ProfileFormData>) => 
       email: "",
       phoneNumber: "",
       nationality: "",
-      countryOfResidence: "",
+      country_of_residence: "", // Updated from countryOfResidence to country_of_residence
       educationLevel: "",
       fieldOfStudy: "",
       workExperience: "",
