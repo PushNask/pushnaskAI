@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { validatePassword } from '@/utils/auth/validation';
 import { TokenStorage, StorageType } from '@/utils/auth/tokenStorage';
 import { toast } from 'sonner';
+import { Session } from '@supabase/supabase-js';
 
 interface AuthState {
   loading: boolean;
@@ -15,6 +16,12 @@ interface UseAuthHandlerOptions {
   maxAttempts?: number;
   lockoutDuration?: number;
   tokenStorage?: StorageType;
+}
+
+interface AuthParams {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
 }
 
 const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
@@ -41,17 +48,9 @@ const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
     return false;
   }, [authState, maxAttempts, lockoutDuration]);
 
-  const handleAuth = async ({
-    email,
-    password,
-    rememberMe = false
-  }: {
-    email: string;
-    password: string;
-    rememberMe?: boolean;
-  }) => {
+  const handleAuth = async ({ email, password, rememberMe = false }: AuthParams): Promise<Session | null> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
       if (isAccountLocked()) {
@@ -61,7 +60,7 @@ const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
       const { isValid, error: validationError } = validatePassword(password);
-      if (!validationError) {
+      if (!isValid) {
         throw new Error(validationError);
       }
 
@@ -85,6 +84,7 @@ const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
         toast.success('Successfully signed in!');
         return data.session;
       }
+      return null;
     } catch (error) {
       console.error('Authentication error:', error);
       
@@ -96,6 +96,7 @@ const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
       }));
 
       toast.error(error instanceof Error ? error.message : 'Authentication failed');
+      return null;
     } finally {
       clearTimeout(timeoutId);
       setAuthState(prev => ({ ...prev, loading: false }));
@@ -103,8 +104,11 @@ const useAuthHandler = (options: UseAuthHandlerOptions = {}) => {
   };
 
   return {
-    ...authState,
     handleAuth,
+    loading: authState.loading,
+    error: authState.error || null,
+    failedAttempts: authState.failedAttempts,
+    lastAttempt: authState.lastAttempt,
     isAccountLocked: isAccountLocked(),
     resetFailedAttempts: () => setAuthState(prev => ({ ...prev, failedAttempts: 0 }))
   };

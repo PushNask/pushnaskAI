@@ -22,7 +22,7 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
   }>({});
   
   const { t } = useTranslation();
-  const { handleAuth, isLoading, error, failedAttempts } = useAuthHandler();
+  const { handleAuth, loading, error, failedAttempts } = useAuthHandler();
 
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
@@ -48,11 +48,11 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
     e.preventDefault();
     if (!validateForm()) return;
     
-    await handleAuth({ 
-      email, 
+    await handleAuth({
+      email,
       password,
-      rememberMe 
-    }, isLogin);
+      rememberMe
+    });
   };
 
   // Show account locked message if too many failed attempts
@@ -89,7 +89,7 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
           }}
           placeholder="your@email.com"
           className={validationErrors.email ? 'border-red-500' : ''}
-          disabled={isLoading}
+          disabled={loading}
           autoComplete="email"
           required
         />
@@ -115,7 +115,7 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
             }}
             placeholder="••••••"
             className={`${validationErrors.password ? 'border-red-500' : ''} pr-10`}
-            disabled={isLoading}
+            disabled={loading}
             autoComplete={isLogin ? "current-password" : "new-password"}
             required
             minLength={6}
@@ -155,9 +155,9 @@ export const AuthForm = ({ isLogin }: AuthFormProps) => {
       <Button
         type="submit"
         className="w-full bg-blue-600 hover:bg-blue-700"
-        disabled={isLoading}
+        disabled={loading}
       >
-        {isLoading ? (
+        {loading ? (
           <div className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
             {isLogin ? t('auth.signingIn') : t('auth.creatingAccount')}
