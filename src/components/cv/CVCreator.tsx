@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppError, handleError } from "@/utils/errorHandling";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { UserCV } from "./types/cvTypes";
 
 interface LoadingProps {
   className?: string;
@@ -56,8 +57,9 @@ const CVCreator = () => {
       if (error) throw error;
 
       if (cvData) {
-        setSelectedRegion(cvData.parsed_data?.region || "");
-        if (cvData.parsed_data?.region) {
+        const userCV = cvData as UserCV;
+        if (userCV.parsed_data?.region) {
+          setSelectedRegion(userCV.parsed_data.region);
           setShowEditor(true);
         }
       }
