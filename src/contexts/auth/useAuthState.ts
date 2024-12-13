@@ -7,7 +7,8 @@ export const useAuthState = (): AuthState => {
     session: null,
     user: null,
     loading: true,
-    profile: null
+    profile: null,
+    error: null
   });
 
   useEffect(() => {
@@ -48,7 +49,8 @@ export const useAuthState = (): AuthState => {
         console.error('Error initializing auth:', error);
         setState(prev => ({
           ...prev,
-          loading: false
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to initialize auth'
         }));
       }
     };
@@ -76,7 +78,8 @@ export const useAuthState = (): AuthState => {
             session,
             user: session.user,
             profile,
-            loading: false
+            loading: false,
+            error: null
           }));
         } else {
           setState(prev => ({
@@ -84,7 +87,8 @@ export const useAuthState = (): AuthState => {
             session: null,
             user: null,
             profile: null,
-            loading: false
+            loading: false,
+            error: null
           }));
         }
       }
