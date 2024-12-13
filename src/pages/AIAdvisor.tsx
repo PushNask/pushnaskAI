@@ -7,6 +7,7 @@ import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import ChatInterface from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton"; // Add this import
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Head from "@/components/Head";
 
