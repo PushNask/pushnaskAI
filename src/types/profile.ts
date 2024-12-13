@@ -6,7 +6,7 @@ export const profileFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().optional(),
   nationality: z.string().optional(),
-  countryOfResidence: z.string().optional(),
+  country_of_residence: z.string().optional(), // Changed from camelCase to snake_case
   educationLevel: z.string().optional(),
   fieldOfStudy: z.string().optional(),
   workExperience: z.string().optional(),

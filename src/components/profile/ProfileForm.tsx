@@ -95,7 +95,7 @@ export const ProfileForm = ({ initialData, title }: ProfileFormProps) => {
               />
               <FormField
                 control={form.control}
-                name="countryOfResidence"
+                name="country_of_residence"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Country of Residence</FormLabel>
