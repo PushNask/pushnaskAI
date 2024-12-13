@@ -21,6 +21,7 @@ const CVCreator = () => {
   const [showEditor, setShowEditor] = useState(false);
   const { isLoading, loadExistingCV, handleSaveCV } = useCVManagement();
   const { toast } = useToast();
+  const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -35,7 +36,7 @@ const CVCreator = () => {
 
   const handlePrint = async () => {
     try {
-      setIsLoading(true);
+      setIsPrinting(true);
       if (remainingFreePrints > 0) {
         await window.print();
         setRemainingFreePrints(prev => prev - 1);
@@ -58,7 +59,7 @@ const CVCreator = () => {
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setIsPrinting(false);
     }
   };
 
@@ -77,7 +78,7 @@ const CVCreator = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {isLoading ? (
+              {isLoading || isPrinting ? (
                 <CVLoadingState />
               ) : !showEditor ? (
                 <RegionSelectorSection
