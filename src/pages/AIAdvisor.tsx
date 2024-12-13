@@ -1,16 +1,14 @@
-import { useState, useMemo, useEffect } from "react";
-import { GraduationCap, Globe, Building, FileText } from "lucide-react";
+import { useState, useMemo } from "react";
+import { GraduationCap, Globe, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
 import ChatInterface from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Skeleton } from "@/components/ui/skeleton";
 import Head from "@/components/Head";
-import { useNavigate } from "react-router-dom";
 
 const services = [
   {
@@ -50,34 +48,24 @@ const AIAdvisor = () => {
   const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const user = useUser();
-  const navigate = useNavigate();
-
-  // Redirect to auth if not logged in
-  useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-    }
-  }, [user, navigate]);
+  const { session } = useAuth();
 
   const handleServiceSelect = async (serviceId: ServiceType) => {
-    if (!user?.id) {
+    if (!session?.user) {
       toast({
         title: "Authentication Required",
         description: "Please sign in to use this service.",
         variant: "destructive"
       });
-      navigate('/auth');
       return;
     }
 
     setIsLoading(true);
     try {
-      // Save service selection to user's service config
       const { error } = await supabase
         .from('service_configs')
         .upsert({
-          user_id: user.id,
+          user_id: session.user.id,
           service_type: serviceId,
           last_used: new Date().toISOString()
         });

@@ -1,48 +1,43 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthState } from './types';
+import { toast } from 'sonner';
 
 export const useAuthState = (): AuthState => {
   const [state, setState] = useState<AuthState>({
     session: null,
     user: null,
-    loading: true,
     profile: null,
+    loading: true,
     error: null
   });
 
   useEffect(() => {
-    console.log('Setting up auth state listener');
-    
-    // Get initial session and profile
     const initializeAuth = async () => {
       try {
+        // Get initial session
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          console.log('Initial session found:', session.user.id);
-          const { data: profile, error: profileError } = await supabase
+          const { data: profile } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
-
-          if (profileError) {
-            console.error('Error fetching profile:', profileError);
-          }
 
           setState(prev => ({
             ...prev,
             session,
             user: session.user,
             profile,
-            loading: false
+            loading: false,
+            error: null
           }));
         } else {
-          console.log('No initial session found');
           setState(prev => ({
             ...prev,
-            loading: false
+            loading: false,
+            error: null
           }));
         }
       } catch (error) {
@@ -52,36 +47,19 @@ export const useAuthState = (): AuthState => {
           loading: false,
           error: error instanceof Error ? error.message : 'Failed to initialize auth'
         }));
+        toast.error('Failed to initialize authentication');
       }
     };
 
+    // Initialize auth
     initializeAuth();
 
-    // Listen for auth changes
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log('Auth state changed:', session?.user?.id);
-        
-        if (session?.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
 
-          if (profileError) {
-            console.error('Error fetching profile:', profileError);
-          }
-
-          setState(prev => ({
-            ...prev,
-            session,
-            user: session.user,
-            profile,
-            loading: false,
-            error: null
-          }));
-        } else {
+        if (event === 'SIGNED_OUT') {
           setState(prev => ({
             ...prev,
             session: null,
@@ -90,6 +68,31 @@ export const useAuthState = (): AuthState => {
             loading: false,
             error: null
           }));
+        } else if (session?.user) {
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            setState(prev => ({
+              ...prev,
+              session,
+              user: session.user,
+              profile,
+              loading: false,
+              error: null
+            }));
+          } catch (error) {
+            console.error('Error fetching profile:', error);
+            setState(prev => ({
+              ...prev,
+              loading: false,
+              error: error instanceof Error ? error.message : 'Failed to fetch profile'
+            }));
+            toast.error('Failed to fetch user profile');
+          }
         }
       }
     );
