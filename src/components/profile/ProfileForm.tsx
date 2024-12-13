@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { FormField } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProfileManagement } from "@/hooks/useProfileManagement";
@@ -30,39 +31,80 @@ export const ProfileForm = ({ initialData, title }: ProfileFormProps) => {
               <FormField
                 control={form.control}
                 name="fullName"
-                label="Full Name"
-                placeholder="John Doe"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
                 name="email"
-                label="Email"
-                type="email"
-                placeholder="john@example.com"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
                 name="currentRole"
-                label="Current Role"
-                placeholder="e.g., Software Engineer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Role</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Software Engineer" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
                 name="phoneNumber"
-                label="Phone Number"
-                placeholder="+1 (555) 000-0000"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+1 (555) 000-0000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
                 name="nationality"
-                label="Nationality"
-                placeholder="Your nationality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nationality</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your nationality" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
                 name="countryOfResidence"
-                label="Country of Residence"
-                placeholder="Your country of residence"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country of Residence</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your country of residence" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
