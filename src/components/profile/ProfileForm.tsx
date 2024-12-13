@@ -56,7 +56,7 @@ export const ProfileForm = ({ initialData, title }: ProfileFormProps) => {
               />
               <FormField
                 control={form.control}
-                name="currentRole"
+                name="current_role"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Current Role</FormLabel>

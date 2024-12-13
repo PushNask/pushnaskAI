@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const profileFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
-  currentRole: z.string().optional(),
+  current_role: z.string().optional(),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().optional(),
   nationality: z.string().optional(),
-  country_of_residence: z.string().optional(), // Changed from camelCase to snake_case
+  country_of_residence: z.string().optional(),
   educationLevel: z.string().optional(),
   fieldOfStudy: z.string().optional(),
   workExperience: z.string().optional(),

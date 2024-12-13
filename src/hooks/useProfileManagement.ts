@@ -16,11 +16,11 @@ export const useProfileManagement = (initialData?: Partial<ProfileFormData>) => 
     resolver: zodResolver(profileFormSchema),
     defaultValues: initialData || {
       fullName: "",
-      currentRole: "",
+      current_role: "",
       email: "",
       phoneNumber: "",
       nationality: "",
-      country_of_residence: "", // Updated from countryOfResidence to country_of_residence
+      country_of_residence: "",
       educationLevel: "",
       fieldOfStudy: "",
       workExperience: "",
