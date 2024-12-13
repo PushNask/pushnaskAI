@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Download, Save } from "lucide-react";
@@ -10,20 +10,54 @@ import OceaniaForm from "./forms/OceaniaForm";
 import LatinAmericaForm from "./forms/LatinAmericaForm";
 import AfricaForm from "./forms/AfricaForm";
 import { CVFormData } from "./types/formTypes";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 type Region = "north-america" | "europe" | "asia" | "middle-east" | "africa" | "oceania" | "latin-america";
 
 interface CVEditorProps {
   selectedRegion: string;
+  onSave?: (data: CVFormData) => void;
 }
 
-const CVEditor = ({ selectedRegion }: CVEditorProps) => {
+const CVEditor = ({ selectedRegion, onSave }: CVEditorProps) => {
   const [activeRegion] = useState<Region>(selectedRegion as Region);
   const [formData, setFormData] = useState<CVFormData | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  const handleFormSubmit = (data: CVFormData) => {
+  useEffect(() => {
+    if (user) {
+      loadExistingData();
+    }
+  }, [user, selectedRegion]);
+
+  const loadExistingData = async () => {
+    try {
+      const { data: cvData, error } = await supabase
+        .from('user_cvs')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('parsed_data->region', selectedRegion)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+
+      if (cvData?.parsed_data) {
+        setFormData(cvData.parsed_data as CVFormData);
+      }
+    } catch (error) {
+      console.error('Error loading CV data:', error);
+    }
+  };
+
+  const handleFormSubmit = async (data: CVFormData) => {
     setFormData(data);
+    if (onSave) {
+      await onSave(data);
+    }
     toast({
       title: "CV Information Saved",
       description: "Your CV information has been saved successfully.",
@@ -42,7 +76,6 @@ const CVEditor = ({ selectedRegion }: CVEditorProps) => {
 
     try {
       // Here you would implement the actual PDF generation
-      // For now, we'll just show a success message
       toast({
         title: "CV Downloaded",
         description: "Your CV has been downloaded as a PDF.",

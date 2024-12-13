@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import CVEditor from "@/components/cv/CVEditor";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppError, handleError } from "@/utils/errorHandling";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 interface LoadingProps {
   className?: string;
@@ -27,12 +29,42 @@ const LoadingState = ({ className = "" }: LoadingProps) => (
 
 const CVCreator = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [remainingFreePrints, setRemainingFreePrints] = useState(2);
   const [showEditor, setShowEditor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      loadExistingCV();
+    }
+  }, [user]);
+
+  const loadExistingCV = async () => {
+    try {
+      const { data: cvData, error } = await supabase
+        .from('user_cvs')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+
+      if (cvData) {
+        setSelectedRegion(cvData.parsed_data?.region || "");
+        if (cvData.parsed_data?.region) {
+          setShowEditor(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading CV:', error);
+    }
+  };
 
   const handlePrint = async () => {
     try {
@@ -68,6 +100,39 @@ const CVCreator = () => {
       setShowEditor(false);
     } else {
       navigate("/profile");
+    }
+  };
+
+  const handleSaveCV = async (formData: any) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase
+        .from('user_cvs')
+        .upsert({
+          user_id: user?.id,
+          content: JSON.stringify(formData),
+          parsed_data: {
+            region: selectedRegion,
+            ...formData
+          },
+          version: 1
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "CV Saved",
+        description: "Your CV has been successfully saved."
+      });
+    } catch (error) {
+      console.error('Error saving CV:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save CV. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,7 +178,10 @@ const CVCreator = () => {
                     </>
                   ) : (
                     <>
-                      <CVEditor selectedRegion={selectedRegion} />
+                      <CVEditor 
+                        selectedRegion={selectedRegion}
+                        onSave={handleSaveCV}
+                      />
                       <PrintControls 
                         remainingFreePrints={remainingFreePrints}
                         onPrint={handlePrint}

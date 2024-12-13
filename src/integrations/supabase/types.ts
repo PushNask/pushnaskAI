@@ -345,36 +345,57 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          country_of_residence: string | null
           created_at: string
           current_role: string | null
+          education_level: string | null
           email: string
           field_of_study: string | null
           full_name: string | null
           id: string
+          nationality: string | null
+          phone_number: string | null
           preferred_industries: string[] | null
           updated_at: string
+          willing_to_relocate: boolean | null
+          work_experience: string | null
+          work_preference: string | null
         }
         Insert: {
           avatar_url?: string | null
+          country_of_residence?: string | null
           created_at?: string
           current_role?: string | null
+          education_level?: string | null
           email: string
           field_of_study?: string | null
           full_name?: string | null
           id: string
+          nationality?: string | null
+          phone_number?: string | null
           preferred_industries?: string[] | null
           updated_at?: string
+          willing_to_relocate?: boolean | null
+          work_experience?: string | null
+          work_preference?: string | null
         }
         Update: {
           avatar_url?: string | null
+          country_of_residence?: string | null
           created_at?: string
           current_role?: string | null
+          education_level?: string | null
           email?: string
           field_of_study?: string | null
           full_name?: string | null
           id?: string
+          nationality?: string | null
+          phone_number?: string | null
           preferred_industries?: string[] | null
           updated_at?: string
+          willing_to_relocate?: boolean | null
+          work_experience?: string | null
+          work_preference?: string | null
         }
         Relationships: []
       }
