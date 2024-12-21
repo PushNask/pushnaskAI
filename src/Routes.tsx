@@ -14,11 +14,12 @@ import ProfileManagement from "./pages/profile/ProfileManagement";
 import ProfileSetup from "./pages/profile/ProfileSetup";
 import CVCreator from "./components/cv/CVCreator";
 import ServiceSetup from "./components/profile/ServiceSetup";
+import Index from "./pages/Index";
 
 const Routes = () => (
   <RouterRoutes>
     {/* Public routes */}
-    <Route path="/" element={<LandingPage />} />
+    <Route path="/" element={<Index />} />
     <Route path="/overview" element={<Overview />} />
     <Route path="/pricing" element={<Pricing />} />
     <Route path="/auth" element={<AuthScreen />} />
