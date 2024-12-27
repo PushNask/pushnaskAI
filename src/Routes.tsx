@@ -1,4 +1,5 @@
 import { Routes as RouterRoutes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Overview from "./pages/Overview";
@@ -16,99 +17,106 @@ import CVCreator from "./components/cv/CVCreator";
 import ServiceSetup from "./components/profile/ServiceSetup";
 import Index from "./pages/Index";
 
-const Routes = () => (
-  <RouterRoutes>
-    {/* Public routes */}
-    <Route path="/" element={<Index />} />
-    <Route path="/overview" element={<Overview />} />
-    <Route path="/pricing" element={<Pricing />} />
-    <Route path="/auth" element={<AuthScreen />} />
+const Routes = () => {
+  const { session } = useAuth();
 
-    {/* Protected routes */}
-    <Route
-      path="/profile/setup"
-      element={
-        <ProtectedRoute>
-          <ProfileSetup />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/dashboard"
-      element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/ai-advisor"
-      element={
-        <ProtectedRoute>
-          <AIAdvisor />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/reports"
-      element={
-        <ProtectedRoute>
-          <Reports />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile"
-      element={
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile/management"
-      element={
-        <ProtectedRoute>
-          <ProfileManagement />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile/cv"
-      element={
-        <ProtectedRoute>
-          <CVCreator />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile/services"
-      element={
-        <ProtectedRoute>
-          <ServiceSetup />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/settings"
-      element={
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/analytics"
-      element={
-        <ProtectedRoute>
-          <Analytics />
-        </ProtectedRoute>
-      }
-    />
+  return (
+    <RouterRoutes>
+      {/* Public routes */}
+      <Route 
+        path="/" 
+        element={session ? <Index /> : <LandingPage />} 
+      />
+      <Route path="/overview" element={<Overview />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/auth" element={<AuthScreen />} />
 
-    {/* Catch all route */}
-    <Route path="*" element={<Navigate to="/" replace />} />
-  </RouterRoutes>
-);
+      {/* Protected routes */}
+      <Route
+        path="/profile/setup"
+        element={
+          <ProtectedRoute>
+            <ProfileSetup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-advisor"
+        element={
+          <ProtectedRoute>
+            <AIAdvisor />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Reports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile/management"
+        element={
+          <ProtectedRoute>
+            <ProfileManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile/cv"
+        element={
+          <ProtectedRoute>
+            <CVCreator />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile/services"
+        element={
+          <ProtectedRoute>
+            <ServiceSetup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Catch all route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </RouterRoutes>
+  );
+};
 
 export default Routes;
